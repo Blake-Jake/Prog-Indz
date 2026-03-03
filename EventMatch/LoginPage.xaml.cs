@@ -28,11 +28,22 @@ public partial class LoginPage : ContentPage
         if (user != null)
         {
             await DisplayAlertAsync("Success", "Login successful!", "OK");
-            await Shell.Current.GoToAsync("//MainPage");
+
+            Preferences.Set("UserAlreadyLoggedIn", true);
+
+            await Shell.Current.GoToAsync("//DashboardPage");
         }
         else
         {
             await DisplayAlertAsync("Error", "Invalid email or password.", "OK");
         }
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        EmailEntry.Text = string.Empty;
+        PasswordEntry.Text = string.Empty;
     }
 }

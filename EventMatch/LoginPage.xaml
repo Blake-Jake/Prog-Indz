@@ -2,37 +2,54 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EventMatch.LoginPage"
-             BackgroundColor="#181818"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             BackgroundImageSource="purplebackg.jpg"
              Title="Login">
+
     <ScrollView>
         <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*">
+            <Image Source="loginBackground.jpg"
+               Aspect="AspectFill"/>
+
             <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="400" Spacing="24" Padding="0">
-                <Label Text="EventMatch" FontSize="32" FontAttributes="Bold" TextColor="#A259FF" HorizontalOptions="Center"/>
-                <Border Background="#232323" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="32">
-                    <VerticalStackLayout Spacing="18">
-                        <Label Text="Welcome back" FontSize="22" TextColor="White" HorizontalOptions="Center"/>
-                        <Label Text="Sign in to continue to your account" FontSize="14" TextColor="#b0b0b0" HorizontalOptions="Center"/>
-                        <Entry x:Name="EmailEntry" Placeholder="Email" BackgroundColor="#232323" TextColor="White" PlaceholderColor="#888" HeightRequest="44" Margin="0,10,0,0">
-                            <Entry.Shadow>
-                                <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
-                            </Entry.Shadow>
-                        </Entry>
-                        <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" BackgroundColor="#232323" TextColor="White" PlaceholderColor="#888" HeightRequest="44">
-                            <Entry.Shadow>
-                                <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
-                            </Entry.Shadow>
-                        </Entry>
-                        <Button Text="Sign in" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="48" Clicked="OnSignInClicked"/>
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
-                            <Label Text="Don't have an account?" FontSize="13" TextColor="#b0b0b0"/>
-                            <Label Text="Sign up" FontSize="13" TextColor="#A259FF" FontAttributes="Bold">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnSignUpTapped" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
+                <Label Text="EventMatch" FontSize="40" FontFamily = "Segoe UI Semibold" TextColor="#D8BFD8" HorizontalOptions="Center"/>
+                <Border Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="32"/>
+                <VerticalStackLayout Spacing="18">
+                    <Label Text="Welcome back" FontSize="22" TextColor="#D8BFD8" HorizontalOptions="Center" FontFamily="Segoe UI Semibold"/>
+                    <Label Text="Sign in to continue to your account" FontSize="14" TextColor="#D8BFD8" HorizontalOptions="Center" FontFamily="Segoe UI Semibold"/>
+                    <Entry x:Name="EmailEntry"
+                           Placeholder="Email"
+                           BackgroundColor="#80232323"
+                           TextColor="White"
+                           PlaceholderColor="White"
+                           HeightRequest="44"
+                           Margin="0,10,0,0">
+                        <Entry.Shadow>
+                            <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
+                        </Entry.Shadow>
+                    </Entry>
+                    <Entry x:Name="PasswordEntry" Placeholder="Password"    BackgroundColor="#80232323"
+                           TextColor="White"
+                           IsPassword="True"
+                           PlaceholderColor="White"
+                           HeightRequest="44"
+                           Margin="0,10,0,0">
+                        <Entry.Shadow>
+                            <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
+                        </Entry.Shadow>
+                    </Entry>
+                    <Button Text="Sign in" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="48" Clicked="OnSignInClicked"/>
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                        <Label Text="Don't have an account?" FontSize="13" TextColor="White" FontFamily="Segoe UI Semibold"/>
+                        <Label Text="Sign up" FontSize="13" TextColor="#A259FF" FontAttributes="Bold">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSignUpTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
         </Grid>
     </ScrollView>
