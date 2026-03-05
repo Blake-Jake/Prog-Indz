@@ -9,4 +9,10 @@ public partial class DashboardPage : ContentPage
         InitializeComponent();
         BindingContext = new DashboardPageView();
     }
+
+    private async void OnOpenProfileClicked(object? sender, EventArgs e)
+    {
+
+        await Shell.Current.GoToAsync("ProfilePage");
+    }
 }

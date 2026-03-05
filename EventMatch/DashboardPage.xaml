@@ -9,6 +9,7 @@
             Text="Welcome to EventMatch" TextColor="#A259FF" FontSize="20" FontAttributes="Bold"
             VerticalOptions="Center" 
             HorizontalOptions="Center"/>
-        <Button Text="Logout" BackgroundColor="#9932CC" TextColor="White" FontAttributes="Bold" Command="{Binding LogoutCommand}"></Button>
+        <Button Text="Logout" BackgroundColor="#9932CC" TextColor="White" FontAttributes="Bold" Command="{Binding LogoutCommand}" />
+        <Button Text="Profile" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" Clicked="OnOpenProfileClicked" />
     </VerticalStackLayout>
 </ContentPage>
