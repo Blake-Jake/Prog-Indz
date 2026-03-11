@@ -53,11 +53,11 @@
 
                     <HorizontalStackLayout Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
                         <Frame Padding="0" HasShadow="False" CornerRadius="80" HeightRequest="120" WidthRequest="120" BackgroundColor="#333333">
-                            <Image x:Name="ProfileImage" Source="profile-placeholder.png" Aspect="AspectFill" />
+                            <Image x:Name="ProfileImage" Source="profile-placeholder.png" Aspect="AspectFill" HeightRequest="400" WidthRequest="400" />
                         </Frame>
                         <VerticalStackLayout VerticalOptions="Center" Spacing="8">
                             <Button x:Name="AddPhotoButton" Text="Add Photo" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="44" Clicked="OnAddPhotoClicked"/>
-                            <Label Text="Supported formats: JPG, PNG" FontSize="12" TextColor="#D8BFD8" HorizontalOptions="Center"/>
+                            <Label Text="Supported formats: JPG, PNG, JPEG" FontSize="12" TextColor="#D8BFD8" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>

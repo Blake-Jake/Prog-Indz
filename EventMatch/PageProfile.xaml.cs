@@ -1,7 +1,8 @@
-using Microsoft.Maui.Controls;
-using Microsoft.Extensions.DependencyInjection;
 using EventMatch.Models;
 using EventMatch.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls;
+using SQLite;
 
 namespace EventMatch;
 
@@ -10,6 +11,20 @@ public partial class ProfilePage : ContentPage
 {
     private readonly UserDatabase _userDb;
     private EventMatch.Models.Profile? _currentProfile;
+    UploadingImage uploadImage { get; set; }
+
+    private string _photoBase64 = "";
+
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
+
+    [Unique]
+    public string UserEmail { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string Tag { get; set; } = string.Empty;
+    public int RadiusKm { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string PhotoPath { get; set; } = string.Empty;
 
     public ProfilePage()
     {
@@ -18,6 +33,8 @@ public partial class ProfilePage : ContentPage
 
         if (RadiusPicker != null && RadiusPicker.Items.Count > 0)
             RadiusPicker.SelectedIndex = 0;
+
+        uploadImage = new UploadingImage();
     }
 
     // email is passed in navigation as ?email=someone@example.com
@@ -28,15 +45,28 @@ public partial class ProfilePage : ContentPage
         base.OnAppearing();
 
         if (string.IsNullOrWhiteSpace(Email))
+            Email = Session.CurrentUserEmail;
+
+        if (string.IsNullOrWhiteSpace(Email))
             return;
 
         _currentProfile = await _userDb.GetProfileByEmailAsync(Email);
+
         if (_currentProfile != null)
         {
             UsernameEntry.Text = _currentProfile.Username;
             TagEntry.Text = _currentProfile.Tag;
             DescriptionEditor.Text = _currentProfile.Description;
-            ProfileImage.Source = string.IsNullOrEmpty(_currentProfile.PhotoPath) ? "profile-placeholder.png" : _currentProfile.PhotoPath;
+
+            if (!string.IsNullOrEmpty(_currentProfile.PhotoPath))
+            {
+                var bytes = Convert.FromBase64String(_currentProfile.PhotoPath);
+                ProfileImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+            }
+            else
+            {
+                ProfileImage.Source = "profile-placeholder.png";
+            }
 
             var index = RadiusPicker.Items.IndexOf(_currentProfile.RadiusKm.ToString());
             RadiusPicker.SelectedIndex = index >= 0 ? index : 0;
@@ -55,14 +85,27 @@ public partial class ProfilePage : ContentPage
 
     private async void OnAddPhotoClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Photo picker not implemented yet.", "OK");
+
+        var img = await uploadImage.OpenMediaPickerAsync();
+        if (img == null)
+            return;
+
+        var imageFile = await uploadImage.Upload(img);
+
+        _photoBase64 = imageFile.ByteBase64;
+
+        var bytes = Convert.FromBase64String(_photoBase64);
+        ProfileImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
     }
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(Email))
+            Email = Session.CurrentUserEmail;
+
+        if (string.IsNullOrWhiteSpace(Email))
         {
-            await DisplayAlert("Error", "No user email provided. Navigate to this page with ?email=user@example.com", "OK");
+            await DisplayAlert("Error", "No user is logged in.", "OK");
             return;
         }
 
@@ -70,18 +113,21 @@ public partial class ProfilePage : ContentPage
         if (RadiusPicker.SelectedIndex >= 0 && int.TryParse(RadiusPicker.Items[RadiusPicker.SelectedIndex], out var r))
             radius = r;
 
-        var profileToSave = new EventMatch.Models.Profile
+        var profileToSave = new Profile
         {
             UserEmail = Email,
             Username = UsernameEntry.Text?.Trim() ?? string.Empty,
             Tag = TagEntry.Text?.Trim() ?? string.Empty,
             RadiusKm = radius,
             Description = DescriptionEditor.Text ?? string.Empty,
-            PhotoPath = _currentProfile?.PhotoPath ?? string.Empty
+            PhotoPath = string.IsNullOrEmpty(_photoBase64)
+                ? _currentProfile?.PhotoPath ?? ""
+                : _photoBase64
         };
 
         await _userDb.SaveProfileAsync(profileToSave);
-        await DisplayAlert("Saved", "Profile saved.", "OK");
+
         _currentProfile = await _userDb.GetProfileByEmailAsync(Email);
+        await DisplayAlert("Saved", "Profile saved.", "OK");
     }
 }

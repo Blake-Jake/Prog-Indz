@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using EventMatch.Services;
+using EventMatch.Models;
 
 namespace EventMatch;
 
@@ -28,6 +29,8 @@ public partial class LoginPage : ContentPage
         if (user != null)
         {
             await DisplayAlertAsync("Success", "Login successful!", "OK");
+
+            Session.CurrentUserEmail = email;
 
             Preferences.Set("UserAlreadyLoggedIn", true);
 
