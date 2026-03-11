@@ -10,7 +10,8 @@
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
-        Route="LoginPage" x:Name="MyLoginPage"/>
+        Route="LoginPage" x:Name="MyLoginPage"
+        FlyoutItemIsVisible="False"/>
     <ShellContent
         Title="Sign Up"
         ContentTemplate="{DataTemplate local:SignUpPage}"
@@ -19,5 +20,9 @@
         Title="Home"
         ContentTemplate="{DataTemplate local:DashboardPage}"
         Route="DashboardPage" />
+    
+    <MenuItem 
+        Text="Logout" 
+        Clicked="OnLogoutClicked"/>
 
 </Shell>
