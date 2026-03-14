@@ -61,6 +61,9 @@
     <MauiXaml Update="DashboardPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="FriendsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

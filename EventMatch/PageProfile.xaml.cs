@@ -16,7 +16,7 @@ public partial class ProfilePage : ContentPage
     private string _photoBase64 = "";
 
     [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
+    public new int Id { get; set; }
 
     [Unique]
     public string UserEmail { get; set; } = string.Empty;
@@ -105,7 +105,7 @@ public partial class ProfilePage : ContentPage
 
         if (string.IsNullOrWhiteSpace(Email))
         {
-            await DisplayAlert("Error", "No user is logged in.", "OK");
+            await DisplayAlertAsync("Error", "No user is logged in.", "OK");
             return;
         }
 
@@ -128,6 +128,6 @@ public partial class ProfilePage : ContentPage
         await _userDb.SaveProfileAsync(profileToSave);
 
         _currentProfile = await _userDb.GetProfileByEmailAsync(Email);
-        await DisplayAlert("Saved", "Profile saved.", "OK");
+        await DisplayAlertAsync("Saved", "Profile saved.", "OK");
     }
 }

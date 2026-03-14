@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EventMatch.FriendsPage"
+             Title="Friends">
+    <StackLayout Padding="20" Spacing="16">
+        <Label Text="Your Friends" FontSize="24" HorizontalOptions="Center" />
+        <CollectionView x:Name="FriendsListView" ItemsSource="{Binding Friends}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="LightGray">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Image Source="{Binding PhotoPath}" WidthRequest="40" HeightRequest="40" />
+                            <Label Text="{Binding Username}" FontSize="18" VerticalOptions="Center" />
+                            <Button Text="Remove" Clicked="OnRemoveFriendClicked" CommandParameter="{Binding .}" />
+                        </StackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label Text="Pending Requests" FontSize="20" HorizontalOptions="Center" />
+        <CollectionView x:Name="PendingRequestsListView" ItemsSource="{Binding PendingRequests}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="#FFFACD">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Image Source="{Binding PhotoPath}" WidthRequest="40" HeightRequest="40" />
+                            <Label Text="{Binding Username}" FontSize="18" VerticalOptions="Center" />
+                            <Button Text="Accept" Clicked="OnAcceptRequestClicked" CommandParameter="{Binding .}" />
+                            <Button Text="Decline" Clicked="OnDeclineRequestClicked" CommandParameter="{Binding .}" />
+                        </StackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label Text="Add New Friends" FontSize="20" HorizontalOptions="Center" />
+        <SearchBar x:Name="UserSearchBar" Placeholder="Search users..." TextChanged="OnSearchTextChanged" />
+        <CollectionView x:Name="UnaddedUsersListView" ItemsSource="{Binding UnaddedUsers}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="#E6E6FA">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Image Source="{Binding PhotoPath}" WidthRequest="40" HeightRequest="40" />
+                            <Label Text="{Binding Username}" FontSize="18" VerticalOptions="Center" />
+                            <Button Text="Add" Clicked="OnAddFriendClicked" CommandParameter="{Binding .}" />
+                        </StackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

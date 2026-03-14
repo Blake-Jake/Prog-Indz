@@ -27,6 +27,8 @@ namespace EventMatch
             // Register both the old route name and the new class-based route.
             Routing.RegisterRoute("Profile", typeof(ProfilePage));
             Routing.RegisterRoute("ProfilePage", typeof(ProfilePage));
+            // Register FriendsPage so Shell.Current.GoToAsync("FriendsPage") can resolve the route.
+            Routing.RegisterRoute("FriendsPage", typeof(FriendsPage));
 
             return app;
         }
