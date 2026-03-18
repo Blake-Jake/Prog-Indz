@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EventMatch.EventPreview"
+             Title="ReviewEvents">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <!-- Tall rectangle where images will later be loaded -->
+            <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" HeightRequest="420" HorizontalOptions="Fill" VerticalOptions="Start">
+                <Grid>
+                    <Image x:Name="EventImage" Source="image-placeholder.png" Aspect="AspectFill" />
+                    <!-- Optional overlay text to indicate this is the image area -->
+                    <Label Text="Image area" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#CCCCCC" Opacity="0.8"/>
+                </Grid>
+            </Frame>
+
+            <!-- Small label above the details textbox -->
+            <Label Text="Event discription" FontSize="12" TextColor="#D8BFD8" />
+
+            <!-- Multiline textbox for event details -->
+            <Editor x:Name="EventDetailsEditor" AutoSize="TextChanges" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

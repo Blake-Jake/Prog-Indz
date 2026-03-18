@@ -13,6 +13,9 @@ public class UserDatabase
         _database.CreateTableAsync<User>().Wait();
         _database.CreateTableAsync<Profile>().Wait();
         _database.CreateTableAsync<Friend>().Wait(); // Add Friend table
+        _database.CreateTableAsync<Group>().Wait();
+        _database.CreateTableAsync<GroupMember>().Wait();
+        _database.CreateTableAsync<GroupMessage>().Wait();
     }
 
     public Task<int> AddUserAsync(User user)
@@ -22,6 +25,85 @@ public class UserDatabase
     {
         var user = await _database.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
         return user;
+    }
+
+    // Group methods
+    public async Task<List<Group>> GetGroupsAsync()
+    {
+        return await _database.Table<Group>().ToListAsync();
+    }
+
+    public async Task<int> SaveGroupAsync(Group group)
+    {
+        if (group.Id == 0)
+        {
+            // new group: insert and add owner as member
+            var id = await _database.InsertAsync(group);
+            if (id > 0)
+            {
+                await _database.InsertAsync(new GroupMember { GroupId = group.Id, UserEmail = group.OwnerEmail });
+            }
+            return id;
+        }
+        else
+        {
+            return await _database.UpdateAsync(group);
+        }
+    }
+
+    public async Task<bool> IsUserMemberOfGroupAsync(int groupId, string userEmail)
+    {
+        var gm = await _database.Table<GroupMember>().Where(g => g.GroupId == groupId && g.UserEmail == userEmail).FirstOrDefaultAsync();
+        return gm != null;
+    }
+
+    public async Task AddUserToGroupAsync(int groupId, string userEmail)
+    {
+        var exists = await _database.Table<GroupMember>().Where(g => g.GroupId == groupId && g.UserEmail == userEmail).FirstOrDefaultAsync();
+        if (exists == null)
+        {
+            await _database.InsertAsync(new GroupMember { GroupId = groupId, UserEmail = userEmail });
+            var group = await _database.Table<Group>().Where(g => g.Id == groupId).FirstOrDefaultAsync();
+            if (group != null)
+            {
+                group.MemberCount++;
+                await _database.UpdateAsync(group);
+            }
+        }
+    }
+
+    public async Task<Group?> GetGroupByIdAsync(int id)
+    {
+        return await _database.Table<Group>().Where(g => g.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task DeleteGroupAsync(int groupId)
+    {
+        // delete messages
+        var msgs = await _database.Table<GroupMessage>().Where(m => m.GroupId == groupId).ToListAsync();
+        foreach (var m in msgs)
+            await _database.DeleteAsync(m);
+
+        // delete members
+        var members = await _database.Table<GroupMember>().Where(g => g.GroupId == groupId).ToListAsync();
+        foreach (var gm in members)
+            await _database.DeleteAsync(gm);
+
+        // delete group
+        var group = await GetGroupByIdAsync(groupId);
+        if (group != null)
+            await _database.DeleteAsync(group);
+    }
+
+    public async Task<List<GroupMessage>> GetMessagesForGroupAsync(int groupId)
+    {
+        return await _database.Table<GroupMessage>().Where(m => m.GroupId == groupId).OrderBy(m => m.Timestamp).ToListAsync();
+    }
+
+    public async Task AddGroupMessageAsync(GroupMessage msg)
+    {
+        msg.Timestamp = DateTime.UtcNow;
+        await _database.InsertAsync(msg);
     }
 
     public async Task<User?> GetUserAsync(string email, string password)

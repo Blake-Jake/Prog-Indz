@@ -15,4 +15,15 @@ public partial class DashboardPage : ContentPage
 
         await Shell.Current.GoToAsync("ProfilePage");
     }
+
+    private async void OnMapsClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("EventMap");
+    }
+
+    private async void OnStartLookingClicked(object? sender, EventArgs e)
+    {
+        // Navigate to the event preview page
+        await Shell.Current.GoToAsync("EventPreview");
+    }
 }

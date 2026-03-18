@@ -48,12 +48,19 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.50" />
+    <PackageReference Include="Onion.Maui.GoogleMaps" Version="6.4.0" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="EventMapControl.xaml.cs">
+      <DependentUpon>EventMapControl.xaml</DependentUpon>
+    </Compile>
     <Compile Update="PageProfile.xaml.cs">
       <DependentUpon>PageProfile.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="EventPreview.xaml.cs">
+      <DependentUpon>EventPreview.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -61,10 +68,25 @@
     <MauiXaml Update="DashboardPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="EditGroupPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="EventMapControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="FriendsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="GroupChatPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="GroupsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="EventPreview.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="SignUpPage.xaml">

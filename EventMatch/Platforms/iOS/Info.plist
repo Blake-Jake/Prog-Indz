@@ -28,5 +28,7 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+	<key>NSLocationWhenInUsageDescription</key>
+	<string>App needs location to display it on maps</string>
 </dict>
 </plist>

@@ -4,12 +4,15 @@
              x:Class="EventMatch.DashboardPage"
              BackgroundImageSource="purplebackg.jpg"
              Title="DashboardPage">
+    
     <VerticalStackLayout VerticalOptions="Center" Spacing="20" Margin="20" >
         <Label 
             Text="Welcome to EventMatch" TextColor="#A259FF" FontSize="20" FontAttributes="Bold"
             VerticalOptions="Center" 
             HorizontalOptions="Center"/>
-        <Button Text="Logout" BackgroundColor="#9932CC" TextColor="White" FontAttributes="Bold" Command="{Binding LogoutCommand}" />
+        <Button Text="Events Map" BackgroundColor="#3CB371" TextColor="White" FontAttributes="Bold" Clicked="OnMapsClicked" />
+        <Button Text="Start looking for events" BackgroundColor="#3CB371" TextColor="White" FontAttributes="Bold" Clicked="OnStartLookingClicked" />
         <Button Text="Profile" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" Clicked="OnOpenProfileClicked" />
+        <Button Text="Logout" BackgroundColor="#9932CC" TextColor="White" FontAttributes="Bold" Command="{Binding LogoutCommand}" />
     </VerticalStackLayout>
 </ContentPage>

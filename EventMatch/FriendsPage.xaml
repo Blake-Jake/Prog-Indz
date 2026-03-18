@@ -48,5 +48,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <!-- Button to open Groups page -->
+        <Button Text="Groups" Clicked="OnGroupsButtonClicked" HorizontalOptions="Center" />
     </StackLayout>
 </ContentPage>

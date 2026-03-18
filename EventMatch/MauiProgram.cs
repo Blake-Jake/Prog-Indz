@@ -1,6 +1,8 @@
 ﻿using EventMatch.Services;
 using System.IO;
 using Microsoft.Maui.Controls;
+using Maui.GoogleMaps.Hosting;
+using Maui.GoogleMaps;
 
 namespace EventMatch
 {
@@ -11,6 +13,12 @@ namespace EventMatch
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+#if ANDROID
+                .UseGoogleMaps()
+#elif IOS
+                .UseGoogleMaps("AIzaSyCCbpV0ZR89ECwB6jakOR31PtZOpiUV5xA")
+#endif
+
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,6 +37,12 @@ namespace EventMatch
             Routing.RegisterRoute("ProfilePage", typeof(ProfilePage));
             // Register FriendsPage so Shell.Current.GoToAsync("FriendsPage") can resolve the route.
             Routing.RegisterRoute("FriendsPage", typeof(FriendsPage));
+            // Register GroupsPage for group functionality
+            Routing.RegisterRoute("GroupsPage", typeof(GroupsPage));
+            // Register group chat page
+            Routing.RegisterRoute("GroupChatPage", typeof(GroupChatPage));
+            // Register edit group page
+            Routing.RegisterRoute("EditGroupPage", typeof(EditGroupPage));
 
             return app;
         }

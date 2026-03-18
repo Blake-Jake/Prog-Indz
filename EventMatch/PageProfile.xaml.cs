@@ -35,6 +35,10 @@ public partial class ProfilePage : ContentPage
             RadiusPicker.SelectedIndex = 0;
 
         uploadImage = new UploadingImage();
+        // Make the profile image area tappable to change/add photo
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += OnAddPhotoClicked;
+        ProfileFrame.GestureRecognizers.Add(tap);
     }
 
     // email is passed in navigation as ?email=someone@example.com
@@ -62,10 +66,13 @@ public partial class ProfilePage : ContentPage
             {
                 var bytes = Convert.FromBase64String(_currentProfile.PhotoPath);
                 ProfileImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+                PhotoOverlayLabel.IsVisible = false;
             }
             else
             {
                 ProfileImage.Source = "profile-placeholder.png";
+                PhotoOverlayLabel.IsVisible = true;
+                PhotoOverlayLabel.Text = "Add Photo";
             }
 
             var index = RadiusPicker.Items.IndexOf(_currentProfile.RadiusKm.ToString());
@@ -96,6 +103,7 @@ public partial class ProfilePage : ContentPage
 
         var bytes = Convert.FromBase64String(_photoBase64);
         ProfileImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+        PhotoOverlayLabel.IsVisible = false;
     }
 
     private async void OnSaveClicked(object sender, EventArgs e)

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EventMatch.GroupsPage"
+             Title="Groups">
+    <StackLayout Padding="20" Spacing="12">
+        <Label Text="Groups" FontSize="24" HorizontalOptions="Center" />
+
+        <CollectionView x:Name="GroupsListView" ItemsSource="{Binding Groups}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="4" Padding="8" StrokeShape="RoundRectangle 8" BackgroundColor="#F0F8FF">
+                        <StackLayout>
+                            <Label Text="{Binding Name}" FontSize="18" TextColor="#222222" />
+                            <Label Text="{Binding Description}" FontSize="12" TextColor="#444444" />
+                            <StackLayout Orientation="Horizontal" Spacing="10">
+                                <Label Text="Members:" VerticalOptions="Center" TextColor="#444444" />
+                                <Label Text="{Binding MemberCount}" VerticalOptions="Center" TextColor="#222222" />
+                                <!-- Show Join only when user can join -->
+                                <Button Text="Join" Clicked="OnJoinClicked" CommandParameter="{Binding .}"
+                                        BackgroundColor="#A894D9" TextColor="White" CornerRadius="8"
+                                        IsVisible="{Binding CanJoin}" />
+                                <!-- Show Joined label when already a member -->
+                                <Label Text="Joined" VerticalOptions="Center" TextColor="#2E7D32" IsVisible="{Binding IsMember}" />
+                                <!-- Owner actions: Edit / Delete -->
+                                <Button Text="Edit" Clicked="OnEditGroupClicked" CommandParameter="{Binding .}" IsVisible="{Binding IsOwner}" />
+                                <Button Text="Delete" Clicked="OnDeleteGroupClicked" CommandParameter="{Binding .}" BackgroundColor="#D32F2F" TextColor="White" IsVisible="{Binding IsOwner}" />
+                                <!-- Open chat -->
+                                <Button Text="Chat" Clicked="OnOpenChatClicked" CommandParameter="{Binding .}" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Label Text="Create Group" FontSize="20" HorizontalOptions="Center" />
+        <Entry x:Name="NewGroupName" Placeholder="Group name" />
+        <Entry x:Name="NewGroupDescription" Placeholder="Description" />
+        <Button Text="Create" Clicked="OnCreateGroupClicked" />
+    </StackLayout>
+</ContentPage>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EventMatch.GroupChatPage"
+             Title="Group Chat">
+    <StackLayout Padding="10" Spacing="8">
+        <Label x:Name="GroupTitle" Text="Group" FontSize="18" HorizontalOptions="Center" />
+        <CollectionView x:Name="MessagesView" ItemsSource="{Binding Messages}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="4">
+                        <Label Text="{Binding FromEmail}" FontSize="12" TextColor="#666" />
+                        <Label Text="{Binding Text}" FontSize="14" />
+                        <Label Text="{Binding Timestamp}" FontSize="10" TextColor="#999" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <StackLayout Orientation="Horizontal" Spacing="8">
+            <Entry x:Name="NewMessageEntry" Placeholder="Type a message..." HorizontalOptions="FillAndExpand" />
+            <Button Text="Send" Clicked="OnSendClicked" />
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

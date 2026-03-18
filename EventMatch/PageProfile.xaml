@@ -16,20 +16,34 @@
 
                 <Border Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="18"/>
 
-                <VerticalStackLayout Spacing="12">
+                <!-- Profile image and username placed above other inputs -->
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" Margin="0,6,0,0">
+                    <Frame x:Name="ProfileFrame" Padding="0" HasShadow="False" CornerRadius="80" HeightRequest="120" WidthRequest="120" BackgroundColor="#333333" Margin="0,8,8,0" Grid.RowSpan="3">
+                        <Grid>
+                            <Image x:Name="ProfileImage" Source="profile-placeholder.png" Aspect="AspectFill" HeightRequest="120" WidthRequest="120" />
+                            <Label x:Name="PhotoOverlayLabel" Text="Add Photo" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" BackgroundColor="#80000000" Padding="6,4" FontAttributes="Bold"/>
+                        </Grid>
+                    </Frame>
+
                     <Entry x:Name="UsernameEntry"
+                           Grid.Column="1"
+                           Grid.Row="0"
                            Placeholder="Username"
                            BackgroundColor="#80232323"
                            TextColor="White"
                            PlaceholderColor="White"
-                           HeightRequest="44" />
+                           HeightRequest="44"
+                           VerticalOptions="Start" />
 
-                    <Entry x:Name="TagEntry"
-                           Placeholder="#tag"
-                           BackgroundColor="#80232323"
-                           TextColor="White"
-                           PlaceholderColor="White"
-                           HeightRequest="44" />
+                    <Label Text="Add tags that interest you" Grid.Column="1" Grid.Row="1" FontSize="12" TextColor="#D8BFD8" Margin="2,8,0,0" />
+
+                    <Editor x:Name="TagEntry" Grid.Column="1" Grid.Row="2" AutoSize="TextChanges" BackgroundColor="#80232323" TextColor="White" Placeholder="#tag" HeightRequest="90" MinimumHeightRequest="72" MaxLength="200" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="12">
+                    <!-- Username Entry moved beside profile image below -->
+
+                    <!-- TagEntry moved above into the profile grid so it appears below the username -->
 
                     <Picker x:Name="RadiusPicker"
                             Title="Area (km)"
@@ -51,15 +65,7 @@
                             Placeholder="Tell others about yourself..."
                             HeightRequest="120" />
 
-                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
-                        <Frame Padding="0" HasShadow="False" CornerRadius="80" HeightRequest="120" WidthRequest="120" BackgroundColor="#333333">
-                            <Image x:Name="ProfileImage" Source="profile-placeholder.png" Aspect="AspectFill" HeightRequest="400" WidthRequest="400" />
-                        </Frame>
-                        <VerticalStackLayout VerticalOptions="Center" Spacing="8">
-                            <Button x:Name="AddPhotoButton" Text="Add Photo" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="44" Clicked="OnAddPhotoClicked"/>
-                            <Label Text="Supported formats: JPG, PNG, JPEG" FontSize="12" TextColor="#D8BFD8" HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
+                    <!-- removed duplicate profile block (moved above) -->
                 </VerticalStackLayout>
 
                 <HorizontalStackLayout Spacing="12" HorizontalOptions="Center">

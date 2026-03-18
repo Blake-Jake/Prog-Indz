@@ -6,6 +6,9 @@
         {
             InitializeComponent();
 
+            // Register routes for pages not defined as ShellContent
+            Routing.RegisterRoute(nameof(EventPreview), typeof(EventPreview));
+
             // Always start with login page
             MyAppShell.CurrentItem = MyLoginPage;
         }

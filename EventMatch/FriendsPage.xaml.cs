@@ -146,4 +146,10 @@ public partial class FriendsPage : ContentPage
         UnaddedUsers.Add(user);
         _allUnaddedUsers.Add(user);
     }
+
+    private async void OnGroupsButtonClicked(object sender, EventArgs e)
+    {
+        // Use the registered route name to navigate to GroupsPage
+        await Shell.Current.GoToAsync("GroupsPage");
+    }
 }
