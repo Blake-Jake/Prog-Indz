@@ -62,6 +62,9 @@
     <Compile Update="EventPreview.xaml.cs">
       <DependentUpon>EventPreview.xaml</DependentUpon>
     </Compile>
+    <Compile Update="EventCreator.xaml.cs">
+      <DependentUpon>EventCreator.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -69,6 +72,9 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="EditGroupPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="EventCreator.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="EventMapControl.xaml">

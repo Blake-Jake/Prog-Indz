@@ -8,6 +8,7 @@
 
             // Register routes for pages not defined as ShellContent
             Routing.RegisterRoute(nameof(EventPreview), typeof(EventPreview));
+            Routing.RegisterRoute(nameof(EventCreator), typeof(EventCreator));
 
             // Always start with login page
             MyAppShell.CurrentItem = MyLoginPage;

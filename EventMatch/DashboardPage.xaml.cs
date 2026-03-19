@@ -26,4 +26,9 @@ public partial class DashboardPage : ContentPage
         // Navigate to the event preview page
         await Shell.Current.GoToAsync("EventPreview");
     }
+
+    private async void OnCreateEventClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("EventCreator");
+    }
 }

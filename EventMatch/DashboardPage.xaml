@@ -10,9 +10,10 @@
             Text="Welcome to EventMatch" TextColor="#A259FF" FontSize="20" FontAttributes="Bold"
             VerticalOptions="Center" 
             HorizontalOptions="Center"/>
-        <Button Text="Events Map" BackgroundColor="#3CB371" TextColor="White" FontAttributes="Bold" Clicked="OnMapsClicked" />
         <Button Text="Start looking for events" BackgroundColor="#3CB371" TextColor="White" FontAttributes="Bold" Clicked="OnStartLookingClicked" />
+        <Button Text="Events Map" BackgroundColor="#3CB371" TextColor="White" FontAttributes="Bold" Clicked="OnMapsClicked" />
         <Button Text="Profile" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" Clicked="OnOpenProfileClicked" />
+        <Button Text="Create Event" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" Clicked="OnCreateEventClicked" />
         <Button Text="Logout" BackgroundColor="#9932CC" TextColor="White" FontAttributes="Bold" Command="{Binding LogoutCommand}" />
     </VerticalStackLayout>
 </ContentPage>

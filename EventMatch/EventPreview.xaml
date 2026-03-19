@@ -18,8 +18,8 @@
             <!-- Small label above the details textbox -->
             <Label Text="Event discription" FontSize="12" TextColor="#D8BFD8" />
 
-            <!-- Multiline textbox for event details -->
-            <Editor x:Name="EventDetailsEditor" AutoSize="TextChanges" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" />
+            <!-- Multiline label for event details (read-only preview) -->
+            <Label x:Name="EventDetailsLabel" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" VerticalTextAlignment="Start" Padding="8" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
