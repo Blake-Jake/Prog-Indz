@@ -4,22 +4,32 @@
              x:Class="EventMatch.EventPreview"
              Title="ReviewEvents">
     
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="12">
-            <!-- Tall rectangle where images will later be loaded -->
-            <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" HeightRequest="420" HorizontalOptions="Fill" VerticalOptions="Start">
-                <Grid>
-                    <Image x:Name="EventImage" Source="image-placeholder.png" Aspect="AspectFill" />
-                    <!-- Optional overlay text to indicate this is the image area -->
-                    <Label Text="Image area" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#CCCCCC" Opacity="0.8"/>
-                </Grid>
-            </Frame>
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="12">
+                <Label Text="Events" FontSize="18" TextColor="#A259FF" HorizontalOptions="Center" />
 
-            <!-- Small label above the details textbox -->
-            <Label Text="Event discription" FontSize="12" TextColor="#D8BFD8" />
+                <!-- Single event preview -->
+                <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" Padding="0" Margin="0,8">
+                    <VerticalStackLayout Padding="12" Spacing="8">
+                        <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" HeightRequest="420" HorizontalOptions="Fill">
+                            <Grid>
+                                <Image x:Name="EventImage" Source="image-placeholder.png" Aspect="AspectFill" />
+                            </Grid>
+                        </Frame>
 
-            <!-- Multiline label for event details (read-only preview) -->
-            <Label x:Name="EventDetailsLabel" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" VerticalTextAlignment="Start" Padding="8" />
-        </VerticalStackLayout>
-    </ScrollView>
+                        <Label Text="Event description" FontSize="12" TextColor="#D8BFD8" />
+                        <Label x:Name="EventDetailsLabel" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" VerticalTextAlignment="Start" Padding="8" />
+                        <Label x:Name="CreatedAtLabel" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="End" />
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Circular 'x' button overlay to cycle events -->
+        <Button x:Name="CycleEventButton" Text="x" WidthRequest="44" HeightRequest="44" CornerRadius="22" BackgroundColor="#AA000000" TextColor="White" FontAttributes="Bold" FontSize="18" Clicked="OnCycleEventClicked" HorizontalOptions="End" VerticalOptions="Start" Margin="16" />
+
+        <!-- Favorite heart button -->
+        <Button x:Name="FavoriteButton" Text="♥" WidthRequest="48" HeightRequest="48" CornerRadius="24" BackgroundColor="#AA00AA00" TextColor="White" FontAttributes="Bold" FontSize="18" Clicked="OnFavoriteClicked" HorizontalOptions="End" VerticalOptions="End" Margin="16" />
+    </Grid>
 </ContentPage>

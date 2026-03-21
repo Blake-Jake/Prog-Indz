@@ -3,6 +3,8 @@ using Microsoft.Maui.Storage;
 using Microsoft.Maui.Controls;
 using System;
 using System.IO;
+using EventMatch.Models;
+using EventMatch.Services;
 
 namespace EventMatch;
 
@@ -15,6 +17,7 @@ public partial class EventCreator : ContentPage
 
     private UploadingImage _uploader = new UploadingImage();
     private string? _pickedImageBase64;
+    private EventStore _store = new EventStore();
 
     private async void OnBackClicked(object sender, EventArgs e)
     {
@@ -23,17 +26,18 @@ public partial class EventCreator : ContentPage
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        // Save details and image to simple preferences for preview
+        // Create new event and add to store
         var details = EventDetailsEditor?.Text ?? string.Empty;
-        Preferences.Set("LastEvent_Details", details);
-
-        // If an image was already picked, save its base64. Otherwise keep existing preference value.
-        if (!string.IsNullOrEmpty(_pickedImageBase64))
+        var newEvent = new Event
         {
-            Preferences.Set("LastEvent_ImageBase64", _pickedImageBase64);
-        }
+            Details = details,
+            ImageBase64 = _pickedImageBase64 ?? string.Empty,
+            CreatedAt = DateTime.UtcNow
+        };
 
-        await DisplayAlert("Saved", "Event saved for preview.", "OK");
+        _store.Add(newEvent);
+
+        await DisplayAlert("Saved", "Event saved.", "OK");
         await Shell.Current.GoToAsync("EventPreview");
     }
 

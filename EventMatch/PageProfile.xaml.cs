@@ -90,6 +90,12 @@ public partial class ProfilePage : ContentPage
         await Shell.Current.GoToAsync("FriendsPage");
     }
 
+    private async void OnMyEventsClicked(object sender, EventArgs e)
+    {
+        // Navigate to a page that shows all events (new page)
+        await Shell.Current.GoToAsync("AllEventsPage");
+    }
+
     private async void OnAddPhotoClicked(object sender, EventArgs e)
     {
 
