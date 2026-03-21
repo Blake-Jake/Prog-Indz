@@ -18,7 +18,7 @@ public partial class DashboardPage : ContentPage
 
     private async void OnMapsClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("EventMap");
+        await Shell.Current.GoToAsync("EventMapControl");
     }
 
     private async void OnStartLookingClicked(object? sender, EventArgs e)
