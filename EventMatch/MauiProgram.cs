@@ -3,6 +3,11 @@ using System.IO;
 using Microsoft.Maui.Controls;
 using Maui.GoogleMaps.Hosting;
 using Maui.GoogleMaps;
+#if WINDOWS
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
+using Windows.Graphics;
+#endif
 
 namespace EventMatch
 {
@@ -11,6 +16,28 @@ namespace EventMatch
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+#if WINDOWS
+Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
+{
+    var nativeWindow = handler.PlatformView;
+    nativeWindow.Activate();
+
+    var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
+    var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
+    var appWindow = AppWindow.GetFromWindowId(windowId);
+
+    // telefono dydis
+    appWindow.Resize(new SizeInt32(500, 990));
+
+    // užrakina resize (nebūtina)
+    var presenter = appWindow.Presenter as OverlappedPresenter;
+    if (presenter != null)
+    {
+        presenter.IsResizable = false;
+        presenter.IsMaximizable = false;
+    }
+});
+#endif
             builder
                 .UseMauiApp<App>()
 #if ANDROID

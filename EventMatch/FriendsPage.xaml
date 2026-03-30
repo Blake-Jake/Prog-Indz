@@ -2,9 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EventMatch.FriendsPage"
+             BackgroundImageSource="download_p.jpg"
+             Shell.NavBarIsVisible="False"
              Title="Friends">
     <StackLayout Padding="20" Spacing="16">
-        <Label Text="Your Friends" FontSize="24" HorizontalOptions="Center" />
+        <Label Text="Your Friends" TextColor="White" FontSize="24" HorizontalOptions="Center" />
         <CollectionView x:Name="FriendsListView" ItemsSource="{Binding Friends}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -18,7 +20,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <Label Text="Pending Requests" FontSize="20" HorizontalOptions="Center" />
+        <Label Text="Pending Requests" TextColor="White" FontSize="20" HorizontalOptions="Center" />
         <CollectionView x:Name="PendingRequestsListView" ItemsSource="{Binding PendingRequests}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -33,7 +35,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <Label Text="Add New Friends" FontSize="20" HorizontalOptions="Center" />
+        <Label Text="Add New Friends" TextColor="White" FontSize="20" HorizontalOptions="Center" />
         <SearchBar x:Name="UserSearchBar" Placeholder="Search users..." TextChanged="OnSearchTextChanged" />
         <CollectionView x:Name="UnaddedUsersListView" ItemsSource="{Binding UnaddedUsers}" SelectionMode="None">
             <CollectionView.ItemTemplate>

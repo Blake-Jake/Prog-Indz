@@ -7,6 +7,56 @@
     x:Name="MyAppShell"
     Title="EventMatch">
 
+
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="180" >
+            <Image Source="download_p.jpg"
+               Aspect="AspectFill"
+               Grid.Row="0"
+               Grid.Column="0"/>
+            <VerticalStackLayout VerticalOptions="End" Padding="20" Spacing="6">
+
+                <Image Source="profile.png"
+                   HeightRequest="60"
+                   WidthRequest="60"
+                   Aspect="AspectFill"/>
+
+                <Label Text="User Name"
+                   TextColor="White"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+                <Label Text="user@email.com"
+                   TextColor="White"
+                   FontSize="12"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Events" Icon="event.png">
+        <ShellContent ContentTemplate="{DataTemplate local:EventPreview}" Route="EventPreview"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Map (dar neiti)" Icon="map.png">
+        <ShellContent ContentTemplate="{DataTemplate local:EventMapControl}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Friends" Icon="friends.png">
+        <ShellContent ContentTemplate="{DataTemplate local:FriendsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Profile" Icon="profile.png">
+        <ShellContent ContentTemplate="{DataTemplate local:ProfilePage}" Route="ProfilePage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="My Events" Icon="event.png">
+        <ShellContent ContentTemplate="{DataTemplate local:AllEventsPage}" Route="MyEventsPage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Create Group" Icon="add-group.png">
+        <ShellContent ContentTemplate="{DataTemplate local:EventCreator}" Route="EventCreator"/>
+    </FlyoutItem>
+
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
@@ -16,11 +66,7 @@
         Title="Sign Up"
         ContentTemplate="{DataTemplate local:SignUpPage}"
         Route="SignUpPage" />
-    <ShellContent x:Name="MyDashboardPage"
-        Title="Home"
-        ContentTemplate="{DataTemplate local:DashboardPage}"
-        Route="DashboardPage" />
-    
+
     <MenuItem 
         Text="Logout" 
         Clicked="OnLogoutClicked"/>

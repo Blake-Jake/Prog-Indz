@@ -14,6 +14,7 @@ public partial class EventPreview : ContentPage
 	public EventPreview()
 	{
 		InitializeComponent();
+
 	}
 
 	protected override void OnAppearing()

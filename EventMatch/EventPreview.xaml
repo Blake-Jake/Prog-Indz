@@ -1,35 +1,81 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EventMatch.EventPreview"
-             Title="ReviewEvents">
-    
+             Shell.NavBarIsVisible="False"
+             Title="ReviewEvents"
+             BackgroundColor="#121212">
+
     <Grid>
-        <ScrollView>
-            <VerticalStackLayout Padding="20" Spacing="12">
-                <Label Text="Events" FontSize="18" TextColor="#A259FF" HorizontalOptions="Center" />
+        <Label Text="Event Preview" FontSize="20" TextColor="White" HorizontalOptions="Center" />
+        <Image x:Name="EventImage"
+               Aspect="AspectFill"
+               HorizontalOptions="Fill"
+               VerticalOptions="Start"
+               HeightRequest="350"/>
 
-                <!-- Single event preview -->
-                <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" Padding="0" Margin="0,8">
-                    <VerticalStackLayout Padding="12" Spacing="8">
-                        <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#333333" HeightRequest="420" HorizontalOptions="Fill">
-                            <Grid>
-                                <Image x:Name="EventImage" Source="image-placeholder.png" Aspect="AspectFill" />
-                            </Grid>
-                        </Frame>
+        <Border StrokeThickness="0"
+                VerticalOptions="End"
+                HeightRequest="400"
+                StrokeShape="RoundRectangle 25,25,0,0"
+                Padding="0">
+            <Grid>
+                <!-- FONAS -->
+                <Image Source="download_p.jpg" Aspect="AspectFill"/>
+                <!-- TAMSUS OVERLAY -->
+                <BoxView BackgroundColor="#80232323"/>
 
-                        <Label Text="Event description" FontSize="12" TextColor="#D8BFD8" />
-                        <Label x:Name="EventDetailsLabel" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" VerticalTextAlignment="Start" Padding="8" />
-                        <Label x:Name="CreatedAtLabel" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="End" />
-                    </VerticalStackLayout>
-                </Frame>
-            </VerticalStackLayout>
-        </ScrollView>
+                <!-- TURINYS -->
+                <StackLayout Padding="20" Spacing="10">
+                    <Label x:Name="NoEventsLabel"
+                           Text="No events at the moment"
+                           FontSize="16"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           IsVisible="False"/>
 
-        <!-- Circular 'x' button overlay to cycle events -->
-        <Button x:Name="CycleEventButton" Text="x" WidthRequest="44" HeightRequest="44" CornerRadius="22" BackgroundColor="#AA000000" TextColor="White" FontAttributes="Bold" FontSize="18" Clicked="OnCycleEventClicked" HorizontalOptions="End" VerticalOptions="Start" Margin="16" />
+                    <Label Text="Event"
+                           FontSize="20"
+                           TextColor="White"
+                           FontAttributes="Bold"/>
 
-        <!-- Favorite heart button -->
-        <Button x:Name="FavoriteButton" Text="♥" WidthRequest="48" HeightRequest="48" CornerRadius="24" BackgroundColor="#AA00AA00" TextColor="White" FontAttributes="Bold" FontSize="18" Clicked="OnFavoriteClicked" HorizontalOptions="End" VerticalOptions="End" Margin="16" />
+                    <Label x:Name="EventDetailsLabel"
+                           TextColor="White"
+                           FontSize="14"/>
+
+                    <Label x:Name="CreatedAtLabel"
+                           FontSize="12"
+                           TextColor="#D8BFD8"
+                           HorizontalOptions="End"/>
+                </StackLayout>
+            </Grid>
+        </Border>
+
+        <!-- X BUTTON -->
+        <Button x:Name="CycleEventButton"
+                Text="X"
+                WidthRequest="44"
+                HeightRequest="44"
+                CornerRadius="22"
+                BackgroundColor="#AA000000"
+                TextColor="White"
+                Clicked="OnCycleEventClicked"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="16"/>
+
+        <!-- FAVORITE BUTTON -->
+        <Button x:Name="FavoriteButton"
+                Text="♥"
+                WidthRequest="50"
+                HeightRequest="50"
+                CornerRadius="25"
+                BackgroundColor="#AA00AA00"
+                TextColor="White"
+                Clicked="OnFavoriteClicked"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="16"/>
+
     </Grid>
+
 </ContentPage>

@@ -4,7 +4,7 @@
              x:Class="EventMatch.LoginPage"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
-             BackgroundImageSource="purplebackg.jpg"
+             BackgroundImageSource="background.png"
              Title="Login">
 
     <ScrollView>
@@ -12,34 +12,42 @@
             <Image Source="loginBackground.jpg"
                Aspect="AspectFill"/>
 
-            <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="400" Spacing="24" Padding="0">
-                <Label Text="EventMatch" FontSize="40" FontFamily = "Segoe UI Semibold" TextColor="#D8BFD8" HorizontalOptions="Center"/>
-                <Border Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="32"/>
+            <VerticalStackLayout Grid.Row="1"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Center"
+                     WidthRequest="400"
+                     Spacing="24"
+                     Padding="0"
+                     Margin="0,250,0,0">
+                
+                <Border Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="0"/>
                 <VerticalStackLayout Spacing="18">
-                    <Label Text="Welcome back" FontSize="22" TextColor="#D8BFD8" HorizontalOptions="Center" FontFamily="Segoe UI Semibold"/>
+                    <Label Text="Welcome back" FontSize="17" TextColor="#D8BFD8" HorizontalOptions="Center" FontFamily="Segoe UI Semibold"/>
                     <Label Text="Sign in to continue to your account" FontSize="14" TextColor="#D8BFD8" HorizontalOptions="Center" FontFamily="Segoe UI Semibold"/>
-                    <Entry x:Name="EmailEntry"
+
+                        <Entry x:Name="EmailEntry"
                            Placeholder="Email"
-                           BackgroundColor="#80232323"
+                           BackgroundColor="#40232323"
                            TextColor="White"
                            PlaceholderColor="White"
-                           HeightRequest="44"
-                           Margin="0,10,0,0">
+                           HeightRequest="44" WidthRequest="300" Margin="0,10,0,0">
                         <Entry.Shadow>
                             <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
                         </Entry.Shadow>
                     </Entry>
-                    <Entry x:Name="PasswordEntry" Placeholder="Password"    BackgroundColor="#80232323"
+                    <Entry x:Name="PasswordEntry" Placeholder="Password"    
+                           BackgroundColor="#40232323"
                            TextColor="White"
                            IsPassword="True"
                            PlaceholderColor="White"
                            HeightRequest="44"
+                           WidthRequest="300"
                            Margin="0,10,0,0">
                         <Entry.Shadow>
                             <Shadow Brush="#232323" Offset="0,2" Radius="4"/>
                         </Entry.Shadow>
                     </Entry>
-                    <Button Text="Sign in" BackgroundColor="#A259FF" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="48" Clicked="OnSignInClicked"/>
+                    <Button Text="Sign in" BackgroundColor="#6025d7" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="28" WidthRequest="200" Clicked="OnSignInClicked"/>
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
                         <Label Text="Don't have an account?" FontSize="13" TextColor="White" FontFamily="Segoe UI Semibold"/>
                         <Label Text="Sign up" FontSize="13" TextColor="#A259FF" FontAttributes="Bold">

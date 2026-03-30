@@ -34,7 +34,7 @@ public partial class LoginPage : ContentPage
 
             Preferences.Set("UserAlreadyLoggedIn", true);
 
-            await Shell.Current.GoToAsync("//DashboardPage");
+            await Shell.Current.GoToAsync("//EventPreview");
         }
         else
         {
