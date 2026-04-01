@@ -13,6 +13,10 @@ public class Group
     // Owner of the group (email)
     public string OwnerEmail { get; set; } = string.Empty;
 
+    // Cloud ID (if the group was created on the remote backend)
+    // This is used to map cloud records to local rows and avoid duplicates.
+    public int CloudId { get; set; } = 0;
+
     // Runtime-only flags - do not persist
     [Ignore]
     public bool IsOwner { get; set; } = false;

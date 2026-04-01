@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="EventMatch.DebugPage"
+    Title="Debug - Local Data" 
+    BackgroundColor="White">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15">
+            
+            <Label 
+                Text="LOCAL DATABASE STATUS"
+                FontSize="24"
+                FontAttributes="Bold"
+                TextColor="DarkBlue"/>
+            
+            <HorizontalStackLayout Spacing="10">
+                <Button 
+                    Text="Refresh"
+                    Clicked="OnRefreshClicked"
+                    BackgroundColor="DodgerBlue"
+                    TextColor="White"/>
+                
+                <Button 
+                    Text="Print Debug"
+                    Clicked="OnPrintClicked"
+                    BackgroundColor="Green"
+                    TextColor="White"/>
+            </HorizontalStackLayout>
+            
+            <Frame BorderColor="LightGray" CornerRadius="10" Padding="15" HasShadow="True">
+                <Label 
+                    x:Name="DataLabel"
+                    Text="Loading..."
+                    FontSize="14"
+                    TextColor="Black"/>
+            </Frame>
+            
+            <Frame BorderColor="LightBlue" CornerRadius="10" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label 
+                        Text="SUMMARY"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="DarkBlue"/>
+                    
+                    <HorizontalStackLayout Spacing="20">
+                        <VerticalStackLayout>
+                            <Label Text="Users:" FontAttributes="Bold"/>
+                            <Label x:Name="UserCountLabel" Text="0" FontSize="20" TextColor="DodgerBlue"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout>
+                            <Label Text="Groups:" FontAttributes="Bold"/>
+                            <Label x:Name="GroupCountLabel" Text="0" FontSize="20" TextColor="Green"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout>
+                            <Label Text="Messages:" FontAttributes="Bold"/>
+                            <Label x:Name="MessageCountLabel" Text="0" FontSize="20" TextColor="Orange"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+            
+            <Button 
+                Text="Clear Local Data"
+                Clicked="OnClearDataClicked"
+                BackgroundColor="Red"
+                TextColor="White"/>
+            
+            <Label 
+                Text="Debug: Shows local device data"
+                FontSize="12"
+                TextColor="Gray"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

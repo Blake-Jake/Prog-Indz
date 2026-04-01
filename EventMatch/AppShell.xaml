@@ -5,7 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:EventMatch"
     x:Name="MyAppShell"
-    Title="EventMatch">
+    Title="EventMatch"
+    FlyoutBehavior="Flyout"
+    FlyoutWidth="250">
 
 
     <Shell.FlyoutHeader>
@@ -21,12 +23,14 @@
                    WidthRequest="60"
                    Aspect="AspectFill"/>
 
-                <Label Text="User Name"
+                <Label x:Name="UserNameLabel"
+                   Text="User Name"
                    TextColor="White"
                    FontSize="18"
                    FontAttributes="Bold"/>
 
-                <Label Text="user@email.com"
+                <Label x:Name="UserEmailLabel"
+                   Text="user@email.com"
                    TextColor="White"
                    FontSize="12"/>
             </VerticalStackLayout>
@@ -38,11 +42,15 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Map (dar neiti)" Icon="map.png">
-        <ShellContent ContentTemplate="{DataTemplate local:EventMapControl}" />
+        <ShellContent ContentTemplate="{DataTemplate local:EventMapControl}" Route="EventMapControl"/>
     </FlyoutItem>
 
     <FlyoutItem Title="Friends" Icon="friends.png">
-        <ShellContent ContentTemplate="{DataTemplate local:FriendsPage}" />
+        <ShellContent ContentTemplate="{DataTemplate local:FriendsPage}" Route="FriendsPage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Groups" Icon="group.png">
+        <ShellContent ContentTemplate="{DataTemplate local:GroupsPage}" Route="GroupsPage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="Profile" Icon="profile.png">
@@ -55,6 +63,10 @@
 
     <FlyoutItem Title="Create Group" Icon="add-group.png">
         <ShellContent ContentTemplate="{DataTemplate local:EventCreator}" Route="EventCreator"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Debug" Icon="info.png">
+        <ShellContent ContentTemplate="{DataTemplate local:DebugPage}" Route="DebugPage"/>
     </FlyoutItem>
 
     <ShellContent

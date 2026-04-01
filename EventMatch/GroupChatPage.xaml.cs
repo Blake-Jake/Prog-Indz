@@ -7,6 +7,7 @@ namespace EventMatch;
 [QueryProperty(nameof(GroupId), "groupId")]
 public partial class GroupChatPage : ContentPage
 {
+    private readonly Services.HybridGroupService _groupService;
     private readonly Services.UserDatabase _userDb;
     private int _groupId;
 
@@ -15,6 +16,7 @@ public partial class GroupChatPage : ContentPage
     public GroupChatPage()
     {
         InitializeComponent();
+        _groupService = Application.Current?.Handler?.MauiContext?.Services.GetService<Services.HybridGroupService>()!;
         _userDb = Application.Current?.Handler?.MauiContext?.Services.GetService<Services.UserDatabase>()!;
         BindingContext = this;
     }
@@ -29,7 +31,8 @@ public partial class GroupChatPage : ContentPage
     private async Task LoadMessages()
     {
         if (_groupId == 0) return;
-        var list = await _userDb.GetMessagesForGroupAsync(_groupId);
+        // Use hybrid service to get messages (cloud first, local fallback)
+        var list = await _groupService.GetGroupMessagesAsync(_groupId);
         Device.BeginInvokeOnMainThread(() =>
         {
             Messages.Clear();
@@ -44,9 +47,13 @@ public partial class GroupChatPage : ContentPage
         if (string.IsNullOrEmpty(text)) return;
         if (_groupId == 0) return;
         var msg = new GroupMessage { GroupId = _groupId, FromEmail = Models.Session.CurrentUserEmail, Text = text };
-        await _userDb.AddGroupMessageAsync(msg);
-        NewMessageEntry.Text = string.Empty;
-        await LoadMessages();
+        // Use hybrid service to add message (syncs to cloud and local)
+        var success = await _groupService.AddGroupMessageAsync(msg);
+        if (success)
+        {
+            NewMessageEntry.Text = string.Empty;
+            await LoadMessages();
+        }
     }
 
     public int GroupId

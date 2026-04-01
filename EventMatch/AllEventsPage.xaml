@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EventMatch.AllEventsPage"
              BackgroundImageSource="download_p.jpg"
-             Shell.NavBarIsVisible="False"
              Title="All Events">
 
     <ScrollView>

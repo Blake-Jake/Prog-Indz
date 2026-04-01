@@ -144,4 +144,65 @@ public partial class ProfilePage : ContentPage
         _currentProfile = await _userDb.GetProfileByEmailAsync(Email);
         await DisplayAlertAsync("Saved", "Profile saved.", "OK");
     }
+
+    private async void OnDeleteAllDataClicked(object sender, EventArgs e)
+    {
+        // Double confirmation - user must be very sure
+        bool firstConfirm = await DisplayAlert(
+            "⚠️ WARNING",
+            "Delete ALL users and groups from Cloud AND Local?\n\nThis action CANNOT be undone!",
+            "Yes, Delete Everything",
+            "Cancel"
+        );
+
+        if (!firstConfirm) return;
+
+        // Second confirmation
+        bool secondConfirm = await DisplayAlert(
+            "🔥 FINAL WARNING",
+            "This is your LAST chance. Are you ABSOLUTELY sure?",
+            "YES, DELETE EVERYTHING",
+            "Cancel"
+        );
+
+        if (!secondConfirm) return;
+
+        try
+        {
+            // Show loading indicator
+            await DisplayAlert("⏳ Deleting...", "Please wait, this may take a moment...", "");
+
+            // Get HybridGroupService from DI
+            var hybridGroupService = Application.Current?.Handler?.MauiContext?.Services.GetService<HybridGroupService>();
+
+            if (hybridGroupService == null)
+            {
+                await DisplayAlert("❌ Error", "HybridGroupService not available", "OK");
+                return;
+            }
+
+            // Delete all data
+            bool success = await hybridGroupService.DeleteAllDataAsync();
+
+            await DisplayAlert(
+                success ? "✅ SUCCESS" : "⚠️ Partial Success",
+                success
+                    ? "All users and groups deleted from Cloud and Local database!"
+                    : "Deletion completed with some warnings. Check debug logs.",
+                "OK"
+            );
+
+            if (success)
+            {
+                // Clear session and return to login
+                Session.CurrentUserEmail = "";
+                await Shell.Current.GoToAsync("///login");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("❌ Error", $"Deletion failed:\n{ex.Message}", "OK");
+            System.Diagnostics.Debug.WriteLine($"[ProfilePage] Delete error: {ex}");
+        }
+    }
 }

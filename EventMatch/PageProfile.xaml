@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EventMatch.ProfilePage"
-             Shell.NavBarIsVisible="False"
              BackgroundImageSource="download_p.jpg"
              Title="Profile">
 
@@ -72,6 +71,18 @@
                     <Button Text="My Events" BackgroundColor="#6A5ACD" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="48" WidthRequest="110" Clicked="OnMyEventsClicked"/>
                     <Button Text="Save" BackgroundColor="#2E8B57" TextColor="White" CornerRadius="8" HeightRequest="48" WidthRequest="110" Clicked="OnSaveClicked"/>
                 </HorizontalStackLayout>
+
+                <!-- Delete All Data Button (Admin/Debug) -->
+                <Button 
+                    x:Name="DeleteAllDataButton"
+                    Text="🗑️ Delete All Data"
+                    Clicked="OnDeleteAllDataClicked"
+                    BackgroundColor="#ff4444"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    HeightRequest="48"
+                    Margin="20,10,20,0"/>
             </VerticalStackLayout>
         </Grid>
     </ScrollView>
