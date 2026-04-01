@@ -7,11 +7,13 @@ namespace EventMatch;
 public partial class SignUpPage : ContentPage
 {
     private readonly UserDatabase _userDb;
+    private readonly CloudAuthService _cloudAuth;
 
     public SignUpPage()
     {
         InitializeComponent();
         _userDb = Application.Current?.Handler?.MauiContext?.Services.GetService<UserDatabase>()!;
+        _cloudAuth = Application.Current?.Handler?.MauiContext?.Services.GetService<CloudAuthService>()!;
     }
 
 
@@ -42,7 +44,25 @@ public partial class SignUpPage : ContentPage
             await DisplayAlertAsync("Error", "User already exists.", "OK");
             return;
         }
-        await _userDb.AddUserAsync(new User { Email = email, Password = password });
+        // Try to register user in cloud first
+        var newUser = new User { Email = email, Password = password };
+        try
+        {
+            var registered = await _cloudAuth.RegisterUserAsync(newUser);
+            if (!registered)
+            {
+                await DisplayAlertAsync("Error", "Registration failed on server.", "OK");
+                return;
+            }
+        }
+        catch
+        {
+            await DisplayAlertAsync("Error", "Registration failed (network/server error).", "OK");
+            return;
+        }
+
+        // Save locally as cache after successful cloud registration
+        await _userDb.AddUserAsync(newUser);
         await DisplayAlertAsync("Success", "Account created!", "OK");
         await Shell.Current.GoToAsync("//LoginPage");
     }

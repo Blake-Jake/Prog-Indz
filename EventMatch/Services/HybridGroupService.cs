@@ -14,7 +14,7 @@ public class HybridGroupService
     private readonly CloudAuthService _cloudAuthService;
     private readonly UserDatabase _localDatabase;
     private bool _isCloudAvailable = true;
-    private readonly bool _cloudOnly = true;
+    private bool _cloudOnly = false;  // ✅ Default to false - delete local data by default
 
     public HybridGroupService(CloudGroupService cloudGroupService, UserDatabase localDatabase, CloudAuthService cloudAuthService)
     {
@@ -45,70 +45,8 @@ public class HybridGroupService
     /// </summary>
     public async Task SyncLocalToCloudAsync()
     {
-        if (_cloudOnly)
-        {
-            Debug.WriteLine("[HybridGroupService] Cloud-only mode enabled - skipping SyncLocalToCloudAsync");
-            return;
-        }
-
-        try
-        {
-            // Sync users
-            var users = await _localDatabase.GetAllUsersAsync();
-            Debug.WriteLine($"[HybridGroupService] Syncing {users.Count} local users to cloud");
-            foreach (var u in users)
-            {
-                try
-                {
-                    var created = await _cloudAuthService.RegisterUserAsync(u);
-                    Debug.WriteLine($"[HybridGroupService] Register user {u.Email} -> {created}");
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"[HybridGroupService] Error registering user {u.Email}: {ex.Message}");
-                }
-            }
-
-            // Sync groups
-            var groups = await _localDatabase.GetGroupsAsync();
-            Debug.WriteLine($"[HybridGroupService] Syncing {groups.Count} local groups to cloud");
-            foreach (var g in groups)
-            {
-                try
-                {
-                    var created = await _cloudGroupService.CreateGroupAsync(g);
-                    if (created != null)
-                    {
-                        Debug.WriteLine($"[HybridGroupService] Created group in cloud: {created.Id} / {created.Name}");
-                        // Sync members
-                        var members = await _localDatabase.GetMembersForGroupAsync(g.Id);
-                        foreach (var m in members)
-                        {
-                            try
-                            {
-                                await _cloudGroupService.AddUserToGroupAsync(created.Id, m.UserEmail);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine($"[HybridGroupService] Error adding member {m.UserEmail} to cloud group {created.Id}: {ex.Message}");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"[HybridGroupService] Cloud create returned null for group {g.Name}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"[HybridGroupService] Error creating group {g.Name}: {ex.Message}");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[HybridGroupService] SyncLocalToCloudAsync error: {ex.Message}");
-        }
+        Debug.WriteLine("[HybridGroupService] SyncLocalToCloudAsync is disabled: local users/groups will NOT be synced to cloud.");
+        return;
     }
 
     /// <summary>
@@ -423,7 +361,7 @@ public class HybridGroupService
             }
         }
 
-        // Delete from local database
+        // Delete from local database (unless cloud-only mode)
         if (!_cloudOnly)
         {
             try
@@ -437,6 +375,10 @@ public class HybridGroupService
                 Debug.WriteLine($"[HybridGroupService] Error deleting local data: {ex.Message}");
                 localSuccess = false;
             }
+        }
+        else
+        {
+            Debug.WriteLine("[HybridGroupService] Cloud-only mode enabled - skipping local data deletion");
         }
 
         return cloudSuccess && localSuccess;
@@ -457,7 +399,9 @@ public class HybridGroupService
         {
             try
             {
+                Debug.WriteLine("[HybridGroupService] Deleting all cloud groups...");
                 await _cloudGroupService.DeleteAllGroupsAsync();
+                Debug.WriteLine("[HybridGroupService] Cloud groups deleted successfully");
             }
             catch (Exception ex)
             {
@@ -466,18 +410,24 @@ public class HybridGroupService
             }
         }
 
-        // Delete from local
+        // Delete from local (unless cloud-only mode)
         if (!_cloudOnly)
         {
             try
             {
+                Debug.WriteLine("[HybridGroupService] Deleting all local groups...");
                 await _localDatabase.DeleteAllGroupsAsync();
+                Debug.WriteLine("[HybridGroupService] Local groups deleted successfully");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[HybridGroupService] Error deleting local groups: {ex.Message}");
                 localSuccess = false;
             }
+        }
+        else
+        {
+            Debug.WriteLine("[HybridGroupService] Cloud-only mode enabled - skipping local groups deletion");
         }
 
         return cloudSuccess && localSuccess;
@@ -498,7 +448,9 @@ public class HybridGroupService
         {
             try
             {
+                Debug.WriteLine("[HybridGroupService] Deleting all cloud users...");
                 await _cloudAuthService.DeleteAllUsersAsync();
+                Debug.WriteLine("[HybridGroupService] Cloud users deleted successfully");
             }
             catch (Exception ex)
             {
@@ -507,18 +459,24 @@ public class HybridGroupService
             }
         }
 
-        // Delete from local
+        // Delete from local (unless cloud-only mode)
         if (!_cloudOnly)
         {
             try
             {
+                Debug.WriteLine("[HybridGroupService] Deleting all local users...");
                 await _localDatabase.DeleteAllUsersAsync();
+                Debug.WriteLine("[HybridGroupService] Local users deleted successfully");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[HybridGroupService] Error deleting local users: {ex.Message}");
                 localSuccess = false;
             }
+        }
+        else
+        {
+            Debug.WriteLine("[HybridGroupService] Cloud-only mode enabled - skipping local users deletion");
         }
 
         return cloudSuccess && localSuccess;
