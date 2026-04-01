@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="EventMatch/EventMatch.csproj" />
+  <Project Path="EventMatch/EventMatch.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

@@ -41,7 +41,7 @@
         <ShellContent ContentTemplate="{DataTemplate local:EventPreview}" Route="EventPreview"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Map (dar neiti)" Icon="map.png">
+    <FlyoutItem Title="Map" Icon="map.png">
         <ShellContent ContentTemplate="{DataTemplate local:EventMapControl}" Route="EventMapControl"/>
     </FlyoutItem>
 
@@ -61,7 +61,7 @@
         <ShellContent ContentTemplate="{DataTemplate local:AllEventsPage}" Route="MyEventsPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Create Group" Icon="add-group.png">
+    <FlyoutItem Title="Create Event" Icon="add-group.png">
         <ShellContent ContentTemplate="{DataTemplate local:EventCreator}" Route="EventCreator"/>
     </FlyoutItem>
 
