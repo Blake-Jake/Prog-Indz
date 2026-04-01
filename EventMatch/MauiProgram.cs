@@ -30,15 +30,16 @@ Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (h
     var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
     var appWindow = AppWindow.GetFromWindowId(windowId);
 
-    // telefono dydis
-    appWindow.Resize(new SizeInt32(500, 990));
+    // Set a larger default window size for desktop so profile UI fits
+    appWindow.Resize(new SizeInt32(1200, 900));
 
-    // užrakina resize (nebūtina)
+    // Allow resizing and maximizing on desktop windows
     var presenter = appWindow.Presenter as OverlappedPresenter;
     if (presenter != null)
     {
-        presenter.IsResizable = false;
-        presenter.IsMaximizable = false;
+        presenter.IsResizable = true;
+        presenter.IsMaximizable = true;
+        presenter.IsMinimizable = true;
     }
 });
 #endif

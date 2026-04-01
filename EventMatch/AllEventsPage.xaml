@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage x:Name="ThisPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:EventMatch"
+             xmlns:conv="clr-namespace:EventMatch.Converters"
              x:Class="EventMatch.AllEventsPage"
              BackgroundImageSource="download_p.jpg"
-             Title="All Events">
+             Title="My events">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
-            <Label Text="All Events" FontSize="20" TextColor="White" HorizontalOptions="Center" />
+            <HorizontalStackLayout HorizontalOptions="Fill" Spacing="12">
+                <Label Text="My events" FontSize="20" TextColor="White" HorizontalOptions="StartAndExpand" />
+                <Button x:Name="SelectAllButton" Text="Select All" IsVisible="False" Clicked="OnSelectAllClicked" BackgroundColor="#666666" TextColor="White" CornerRadius="8" WidthRequest="110" HorizontalOptions="End" />
+                <Button x:Name="UninterestedButton" Text="I'm not interested anymore" Clicked="OnUninterestedClicked" BackgroundColor="#9932CC" TextColor="White" CornerRadius="8" WidthRequest="220" HorizontalOptions="End" />
+            </HorizontalStackLayout>
 
-            <CollectionView x:Name="AllEventsCollectionView" ItemsLayout="VerticalList">
+            <CollectionView x:Name="AllEventsCollectionView" ItemsLayout="VerticalList" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#434253" Padding="12" Margin="0,8">
-                            <VerticalStackLayout>
-                                <Image Source="{Binding ImageSource}" Aspect="AspectFill" HeightRequest="220" />
-                                <Label Text="{Binding Details}" FontSize="14" TextColor="White" Margin="0,8,0,0" />
-                                <Label Text="{Binding CreatedAt}" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="End" />
-                            </VerticalStackLayout>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- selection checkbox (hidden until selection mode is active) -->
+                                <CheckBox IsChecked="{Binding IsSelected}" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0"
+                                          IsVisible="{Binding SelectionEnabled}" CheckedChanged="OnItemCheckedChanged" />
+
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Image Source="{Binding ImageSource}" Aspect="AspectFill" HeightRequest="160" />
+                                    <Label Text="{Binding Details}" FontSize="14" TextColor="White" Margin="0,8,0,0" />
+                                    <Label Text="{Binding CreatedAt}" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="Start" />
+                                </VerticalStackLayout>
+
+                                <!-- No per-item remove button; use bulk "I'm not interested anymore" flow -->
+                            </Grid>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
