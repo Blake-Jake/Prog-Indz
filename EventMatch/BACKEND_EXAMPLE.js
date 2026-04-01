@@ -322,6 +322,10 @@ app.delete('/api/groups/:id', (req, res) => {
                 res.json({ message: 'Group deleted' });
             });
         });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 /**
  * POST /api/admin/delete-all
@@ -356,10 +360,6 @@ app.post('/api/admin/delete-all', (req, res) => {
                 res.json({ message: 'All data deleted' });
             });
         });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
