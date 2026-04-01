@@ -495,6 +495,42 @@ app.get('/api/groups/:id/members', (req, res) => {
     }
 });
 
+// ============= STATUS & ADMIN ROUTES =============
+
+/**
+ * GET /api/users
+ * Get all users from database (admin endpoint)
+ */
+app.get('/api/users', (req, res) => {
+    try {
+        db.all('SELECT id, email, created_at FROM users', (err, users) => {
+            if (err) {
+                return res.status(500).json({ error: 'Database error' });
+            }
+            res.json(users || []);
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * GET /api/groups
+ * Get all groups from database (public browse)
+ */
+app.get('/api/groups', (req, res) => {
+    try {
+        db.all('SELECT * FROM groups ORDER BY createdAt DESC', (err, groups) => {
+            if (err) {
+                return res.status(500).json({ error: 'Database error' });
+            }
+            res.json(groups || []);
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ============= HEALTH & STATUS =============
 
 /**
