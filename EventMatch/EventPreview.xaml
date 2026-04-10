@@ -41,6 +41,11 @@
                            TextColor="White"
                            FontSize="14"/>
 
+                    <Label x:Name="LocationLabel"
+                           TextColor="#D8BFD8"
+                           FontSize="13"
+                           IsVisible="False"/>
+
                     <Label x:Name="CreatedAtLabel"
                            FontSize="12"
                            TextColor="#D8BFD8"

@@ -5,11 +5,15 @@ using System;
 using System.IO;
 using EventMatch.Models;
 using EventMatch.Services;
+using Maui.GoogleMaps;
 
 namespace EventMatch;
 
 public partial class EventCreator : ContentPage
 {
+    double selectedLat;
+    double selectedLng;
+
     public EventCreator()
     {
         InitializeComponent();
@@ -24,6 +28,8 @@ public partial class EventCreator : ContentPage
         await Shell.Current.GoToAsync("..", true);
     }
 
+    private string? _selectedAddress;
+
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         // Create new event and add to store
@@ -32,7 +38,10 @@ public partial class EventCreator : ContentPage
         {
             Details = details,
             ImageBase64 = _pickedImageBase64 ?? string.Empty,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Latitude = selectedLat,
+            Longitude = selectedLng,
+            LocationAddress = _selectedAddress ?? string.Empty
         };
 
         _store.Add(newEvent);
@@ -61,5 +70,30 @@ public partial class EventCreator : ContentPage
                 ImageOverlayLabel.IsVisible = false;
         }
         catch { }
+    }
+
+    private async void OnPickLocationClicked(object sender, EventArgs e)
+    {
+        var mapPage = new EventMapControl();
+
+        mapPage.LocationSelected = async (lat, lng) =>
+        {
+            selectedLat = lat;
+            selectedLng = lng;
+
+#if WINDOWS
+
+            var address = $"{lat:F4}, {lng:F4}";
+#else
+    var geocoder = new Geocoder();
+    var positions = await geocoder.GetAddressesForPositionAsync(new Position(lat, lng));
+    var address = positions.FirstOrDefault() ?? $"{lat:F4}, {lng:F4}";
+#endif
+
+            _selectedAddress = address;
+            LocationLabel.Text = $"📍 {address}";
+        };
+
+        await Navigation.PushAsync(mapPage);
     }
 }

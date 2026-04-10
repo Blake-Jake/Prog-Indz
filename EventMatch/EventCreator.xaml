@@ -23,9 +23,27 @@
             <!-- Multiline textbox for event details -->
             <Editor x:Name="EventDetailsEditor" AutoSize="TextChanges" HeightRequest="120" BackgroundColor="#80232323" TextColor="White" />
 
+            <Label x:Name="LocationLabel"
+       Text="No location selected"
+       TextColor="White"
+       FontSize="13"
+       Margin="0,4,0,0"/>
+
+            <!-- Buttons row -->
             <HorizontalStackLayout Spacing="12" HorizontalOptions="Center">
-                <Button Text="Back" BackgroundColor="#333333" TextColor="White" CornerRadius="8" HeightRequest="48" WidthRequest="110" Clicked="OnBackClicked"/>
-                <Button Text="Save" BackgroundColor="#2E8B57" TextColor="White" CornerRadius="8" HeightRequest="48" WidthRequest="110" Clicked="OnSaveClicked"/>
+                <Button Text="Pick Location"
+            BackgroundColor="#444"
+            TextColor="White"
+            CornerRadius="8"
+            Clicked="OnPickLocationClicked"/>
+
+                <Button Text="Save"
+            BackgroundColor="#2E8B57"
+            TextColor="White"
+            CornerRadius="8"
+            HeightRequest="48"
+            WidthRequest="110"
+            Clicked="OnSaveClicked"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

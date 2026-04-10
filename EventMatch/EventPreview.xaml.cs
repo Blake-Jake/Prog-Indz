@@ -28,15 +28,16 @@ public partial class EventPreview : ContentPage
 		var newItems = events
 			.Where(ev => ev.FavoritedBy == null || !ev.FavoritedBy.Contains(currentUser))
 			.OrderByDescending(ev => ev.CreatedAt)
-			.Select(ev => new EventPreviewItem
-			{
-				Details = ev.Details,
-				CreatedAt = ev.CreatedAt,
-				ImageSource = string.IsNullOrEmpty(ev.ImageBase64)
-					? ImageSource.FromFile("image-placeholder.png")
-					: ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(ev.ImageBase64))),
-				IsFavorite = ev.FavoritedBy != null && ev.FavoritedBy.Contains(currentUser)
-			}).ToList();
+            .Select(e => new EventPreviewItem
+            {
+                Details = e.Details,
+                CreatedAt = e.CreatedAt,
+                LocationAddress = e.LocationAddress,  // add this
+                ImageSource = string.IsNullOrEmpty(e.ImageBase64)
+        ? ImageSource.FromFile("image-placeholder.png")
+        : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
+                IsFavorite = e.FavoritedBy != null && e.FavoritedBy.Contains(currentUser)
+            }).ToList();
 
 		if (newItems != null && newItems.Count > 0)
 		{
@@ -58,15 +59,16 @@ public partial class EventPreview : ContentPage
 		// Exclude events already favorited by the current user
 		_items = events
 			.Where(e => e.FavoritedBy == null || !e.FavoritedBy.Contains(currentUser))
-			.Select(e => new EventPreviewItem
-		{
-			Details = e.Details,
-			CreatedAt = e.CreatedAt,
-            ImageSource = string.IsNullOrEmpty(e.ImageBase64)
-				? ImageSource.FromFile("image-placeholder.png")
-				: ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
-			IsFavorite = e.FavoritedBy != null && e.FavoritedBy.Contains(currentUser)
-        }).ToList();
+            .Select(e => new EventPreviewItem
+            {
+                Details = e.Details,
+                CreatedAt = e.CreatedAt,
+                LocationAddress = e.LocationAddress,  // add this
+                ImageSource = string.IsNullOrEmpty(e.ImageBase64)
+        ? ImageSource.FromFile("image-placeholder.png")
+        : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
+                IsFavorite = e.FavoritedBy != null && e.FavoritedBy.Contains(currentUser)
+            }).ToList();
 
 		_currentIndex = 0;
      UpdateDisplayedEvent();
@@ -113,7 +115,21 @@ public partial class EventPreview : ContentPage
 		if (EventDetailsLabel != null)
 			EventDetailsLabel.Text = item.Details;
 
-		if (EventImage != null)
+        var locLabel = this.FindByName<Label>("LocationLabel");
+        if (locLabel != null)
+        {
+            if (!string.IsNullOrEmpty(item.LocationAddress))
+            {
+                locLabel.Text = $"📍 {item.LocationAddress}";
+                locLabel.IsVisible = true;
+            }
+            else
+            {
+                locLabel.IsVisible = false;
+            }
+        }
+
+        if (EventImage != null)
 			EventImage.Source = item.ImageSource;
 
 		if (CreatedAtLabel != null)
@@ -185,8 +201,9 @@ public class EventPreviewItem : INotifyPropertyChanged
 	public DateTime CreatedAt { get; set; }
 	public ImageSource ImageSource { get; set; }
 	public bool IsFavorite { get; set; }
+    public string LocationAddress { get; set; } = string.Empty;
 
-	private bool _isSelected;
+    private bool _isSelected;
 	public bool IsSelected
 	{
 		get => _isSelected;
