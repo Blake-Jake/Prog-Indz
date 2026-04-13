@@ -103,7 +103,10 @@ public partial class EventPreview : ContentPage
 			if (EventImage != null) EventImage.IsVisible = false;
 			if (CreatedAtLabel != null) CreatedAtLabel.IsVisible = false;
 
-			var refresh = this.FindByName<Button>("RefreshButton");
+            var locLabelEmpty = this.FindByName<Label>("LocationLabel");
+            if (locLabelEmpty != null) locLabelEmpty.IsVisible = false;
+
+            var refresh = this.FindByName<Button>("RefreshButton");
 			if (refresh != null) refresh.IsVisible = true;
 
 			return;

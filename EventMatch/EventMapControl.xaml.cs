@@ -2,6 +2,7 @@ using EventMatch.Services;
 using Maui.GoogleMaps;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using EventMatch.Models;
 
 namespace EventMatch;
 
@@ -10,7 +11,6 @@ public partial class EventMapControl : ContentPage
     public Action<double, double> LocationSelected;
 
     Maui.GoogleMaps.Map map;
-
     WebView windowsWeb;
     double defaultLat = 54.8985;
     double defaultLng = 23.9036;
@@ -25,28 +25,24 @@ public partial class EventMapControl : ContentPage
         InitializeComponent();
 
 #if ANDROID
-        var map = new Maui.GoogleMaps.Map
+        map = new Maui.GoogleMaps.Map
         {
             HeightRequest = 500,
             MapType = MapType.Street
         };
 
-        var pin = new Maui.GoogleMaps.Pin
-        {
-            Label = "Kaunas",
-            Address = "Kaunas, Lithuania",
-            Type = PinType.Place,
-            Position = new Maui.GoogleMaps.Position(54.8985, 23.9036)
-        };
-        map.Pins.Add(pin);
-
         map.MoveToRegion(MapSpan.FromCenterAndRadius(
-            new Maui.GoogleMaps.Position(54.8985, 23.9036),
+            new Maui.GoogleMaps.Position(defaultLat, defaultLng),
             Distance.FromKilometers(5)));
 
         map.MapClicked += (s, e) =>
         {
+            // Only allow picking if in pick mode
+            if (LocationSelected == null) return;
+
             map.Pins.Clear();
+            // Re-add event pins
+            LoadEventPinsAndroid();
 
             var newPin = new Pin
             {
@@ -54,7 +50,6 @@ public partial class EventMapControl : ContentPage
                 Position = e.Point,
                 Type = PinType.Place
             };
-
             map.Pins.Add(newPin);
             LocationSelected?.Invoke(e.Point.Latitude, e.Point.Longitude);
             Navigation.PopAsync();
@@ -82,22 +77,42 @@ public partial class EventMapControl : ContentPage
   <script>
     var selectedLat = null;
     var selectedLng = null;
+    var confirmed = false;
     var marker = null;
+    var mapObj = null;
+    var pickMode = false;
+    var pendingPins = [];
+    var mapReady = false;
 
     function initMap() {{
-      var map = new google.maps.Map(document.getElementById('map'), {{
+      mapObj = new google.maps.Map(document.getElementById('map'), {{
         center: {{ lat: {defaultLat}, lng: {defaultLng} }},
-        zoom: 14
+        zoom: 12
       }});
 
-      map.addListener('click', function(e) {{
+      mapReady = true;
+
+      // Add any pins that were queued before map was ready
+      pendingPins.forEach(function(p) {{
+        new google.maps.Marker({{
+          position: {{ lat: p.lat, lng: p.lng }},
+          map: mapObj,
+          title: p.label,
+          icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        }});
+      }});
+      pendingPins = [];
+
+      mapObj.addListener('click', function(e) {{
+        if (!pickMode) return;
         selectedLat = e.latLng.lat();
         selectedLng = e.latLng.lng();
+        confirmed = false;
 
         if (marker) marker.setMap(null);
         marker = new google.maps.Marker({{
           position: e.latLng,
-          map: map,
+          map: mapObj,
           title: 'Selected Location'
         }});
 
@@ -105,10 +120,34 @@ public partial class EventMapControl : ContentPage
       }});
     }}
 
+    function enablePickMode() {{
+      pickMode = true;
+    }}
+
+    function addEventPin(lat, lng, label) {{
+      if (mapReady) {{
+        new google.maps.Marker({{
+          position: {{ lat: lat, lng: lng }},
+          map: mapObj,
+          title: label,
+          icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        }});
+      }} else {{
+        pendingPins.push({{ lat: lat, lng: lng, label: label }});
+      }}
+    }}
+
     function confirmLocation() {{
       if (selectedLat !== null && selectedLng !== null) {{
-        window.location.href = 'eventmatch://location?lat=' + selectedLat + '&lng=' + selectedLng;
+        confirmed = true;
       }}
+    }}
+
+    function getResult() {{
+      if (confirmed) {{
+        return selectedLat + ',' + selectedLng;
+      }}
+      return '';
     }}
   </script>
   <script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyA2lGsQdCDdzQlfhZWYYPVEPye9ixinTvM&callback=initMap' async defer></script>
@@ -121,86 +160,138 @@ public partial class EventMapControl : ContentPage
             Source = new HtmlWebViewSource { Html = html }
         };
 
-        windowsWeb.Navigating += OnWindowsMapNavigating;
-        windowsWeb.Navigated += (s, e) =>
+        windowsWeb.Navigated += async (s, e) =>
         {
-            if (e?.Url == null) return;
-            OnWindowsMapNavigating(s, new WebNavigatingEventArgs(
-                WebNavigationEvent.NewPage, null, e.Url));
+            // Poll until Google Maps JS is actually ready
+            for (int i = 0; i < 20; i++)
+            {
+                await Task.Delay(500);
+                var ready = await windowsWeb.EvaluateJavaScriptAsync("typeof mapObj !== 'undefined' && mapObj !== null ? 'true' : 'false'");
+                if (ready == "true")
+                {
+                    StartPolling();
+                    await LoadEventPinsWindows();
+                    if (LocationSelected != null)
+                        await windowsWeb.EvaluateJavaScriptAsync("enablePickMode()");
+                    break;
+                }
+            }
         };
 
         MainLayout.Children.Add(windowsWeb);
 #endif
     }
 
-#if WINDOWS
-    private void OnWindowsMapNavigating(object sender, WebNavigatingEventArgs e)
+    protected override async void OnAppearing()
     {
-        if (e?.Url == null) return;
-        if (e.Url.StartsWith("eventmatch://location"))
+        base.OnAppearing();
+#if ANDROID
+        await Task.Delay(300); // wait for map to render
+        LoadEventPinsAndroid();
+#endif
+    }
+
+#if ANDROID
+    private void LoadEventPinsAndroid()
+    {
+        if (map == null) return;
+
+        var store = new EventStore();
+        var events = store.LoadAll();
+
+        map.Pins.Clear(); // clear first, then re-add all
+
+        foreach (var ev in events)
         {
-            e.Cancel = true;
+            if (ev.Latitude == 0 && ev.Longitude == 0) continue;
 
-            try
+            map.Pins.Add(new Pin
             {
-                // Manual query string parsing - no System.Web needed
-                var url = e.Url;
-                var queryStart = url.IndexOf('?');
-                if (queryStart == -1) return;
-
-                var query = url.Substring(queryStart + 1);
-                var parts = query.Split('&');
-
-                double lat = 0, lng = 0;
-                bool gotLat = false, gotLng = false;
-
-                foreach (var part in parts)
-                {
-                    var kv = part.Split('=');
-                    if (kv.Length != 2) continue;
-
-                    if (kv[0] == "lat")
-                        gotLat = double.TryParse(kv[1],
-                            System.Globalization.NumberStyles.Float,
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            out lat);
-
-                    if (kv[0] == "lng")
-                        gotLng = double.TryParse(kv[1],
-                            System.Globalization.NumberStyles.Float,
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            out lng);
-                }
-
-                if (gotLat && gotLng)
-                {
-                    LocationSelected?.Invoke(lat, lng);
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        await Navigation.PopAsync();
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Map navigation error: {ex.Message}");
-            }
+                Label = string.IsNullOrEmpty(ev.LocationAddress) ? "Event" : ev.LocationAddress,
+                Address = ev.Details?.Split('\n').FirstOrDefault() ?? "",
+                Position = new Maui.GoogleMaps.Position(ev.Latitude, ev.Longitude),
+                Type = PinType.Place
+            });
         }
+    }
+#endif
+
+#if WINDOWS
+    private async Task LoadEventPinsWindows()
+    {
+        if (windowsWeb == null) return;
+
+        var store = new EventStore();
+        var events = store.LoadAll();
+
+        foreach (var ev in events)
+        {
+            if (ev.Latitude == 0 && ev.Longitude == 0) continue;
+            var label = (ev.LocationAddress ?? ev.Details?.Split('\n').FirstOrDefault() ?? "Event")
+                .Replace("'", "\\'");
+            await windowsWeb.EvaluateJavaScriptAsync(
+                $"addEventPin({ev.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, " +
+                $"{ev.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, '{label}')");
+        }
+    }
+
+    private void StartPolling()
+    {
+        _pollCts?.Cancel();
+        _pollCts = new System.Threading.CancellationTokenSource();
+        var token = _pollCts.Token;
+
+        Task.Run(async () =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                await Task.Delay(500, token);
+
+                string result = null;
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    try { result = await windowsWeb.EvaluateJavaScriptAsync("getResult()"); }
+                    catch { }
+                });
+
+                if (!string.IsNullOrEmpty(result) && result != "null")
+                {
+                    _pollCts.Cancel();
+                    var parts = result.Split(',');
+                    if (parts.Length == 2 &&
+                        double.TryParse(parts[0], System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out double lat) &&
+                        double.TryParse(parts[1], System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out double lng))
+                    {
+                        await MainThread.InvokeOnMainThreadAsync(async () =>
+                        {
+                            LocationSelected?.Invoke(lat, lng);
+                            await Navigation.PopAsync();
+                        });
+                    }
+                }
+            }
+        }, token);
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _pollCts?.Cancel();
     }
 #endif
 
     public void ShowLocation(double lat, double lng, string label = "Event")
     {
 #if ANDROID
-        var map = MainLayout.Children[1] as Maui.GoogleMaps.Map;
         map?.Pins.Clear();
-        var pin = new Maui.GoogleMaps.Pin
+        map?.Pins.Add(new Maui.GoogleMaps.Pin
         {
             Label = label,
             Position = new Maui.GoogleMaps.Position(lat, lng),
             Type = PinType.Place
-        };
-        map?.Pins.Add(pin);
+        });
         map?.MoveToRegion(MapSpan.FromCenterAndRadius(
             new Maui.GoogleMaps.Position(lat, lng),
             Distance.FromKilometers(5)));
