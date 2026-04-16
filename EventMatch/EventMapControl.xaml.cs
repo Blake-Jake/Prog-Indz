@@ -18,6 +18,7 @@ public partial class EventMapControl : ContentPage
 
 #if WINDOWS
     private System.Threading.CancellationTokenSource _pollCts;
+    private bool _pinsLoaded = false;
 #endif
 
     public EventMapControl()
@@ -37,11 +38,9 @@ public partial class EventMapControl : ContentPage
 
         map.MapClicked += (s, e) =>
         {
-            // Only allow picking if in pick mode
             if (LocationSelected == null) return;
 
             map.Pins.Clear();
-            // Re-add event pins
             LoadEventPinsAndroid();
 
             var newPin = new Pin
@@ -54,13 +53,27 @@ public partial class EventMapControl : ContentPage
             LocationSelected?.Invoke(e.Point.Latitude, e.Point.Longitude);
             Navigation.PopAsync();
         };
+        map.PinClicked += (s, e) =>
+        {
+            e.Handled = true; // stops default info window
 
+            var tappedPin = e.Pin;
+            // find the matching event by position
+            var store = new EventStore();
+            var ev = store.LoadAll().FirstOrDefault(x =>
+                Math.Abs(x.Latitude - tappedPin.Position.Latitude) < 0.0001 &&
+                Math.Abs(x.Longitude - tappedPin.Position.Longitude) < 0.0001);
+
+            if (ev == null) return;
+
+            ShowEventOverlay(ev);
+        };
         MainLayout.Children.Add(map);
 
 #elif WINDOWS
         string mapCss = "#map { width: 100%; height: 500px; }";
         string btnCss = "#confirm-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: #2E8B57; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; z-index: 999; display: none; }";
-
+        string infoCss = "#info-box { display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(30,30,30,0.95); color: white; padding: 12px 18px; border-radius: 10px; z-index: 998; min-width: 250px; max-width: 320px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); } #info-box .info-title { font-weight: bold; font-size: 15px; margin-bottom: 4px; } #info-box .info-address { font-size: 13px; color: #D8BFD8; } #info-close { float: right; cursor: pointer; margin-left: 10px; font-size: 16px; }";
         string html = $@"
 <!DOCTYPE html>
 <html>
@@ -69,11 +82,18 @@ public partial class EventMapControl : ContentPage
     body {{ margin: 0; padding: 0; }}
     {mapCss}
     {btnCss}
+    {infoCss}
   </style>
 </head>
 <body>
   <div id='map'></div>
   <button id='confirm-btn' onclick='confirmLocation()'>Confirm Location</button>
+  <div id='info-box'>
+    <span id='info-close' onclick='closeInfo()'>✕</span>
+    <img id='info-img' src='' style='width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:none;'/>
+    <div class='info-title' id='info-title'></div>
+    <div class='info-address' id='info-address'></div>
+  </div>
   <script>
     var selectedLat = null;
     var selectedLng = null;
@@ -92,19 +112,14 @@ public partial class EventMapControl : ContentPage
 
       mapReady = true;
 
-      // Add any pins that were queued before map was ready
       pendingPins.forEach(function(p) {{
-        new google.maps.Marker({{
-          position: {{ lat: p.lat, lng: p.lng }},
-          map: mapObj,
-          title: p.label,
-          icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-        }});
+        addEventPinNow(p.lat, p.lng, p.label, p.address, p.img);
       }});
       pendingPins = [];
 
       mapObj.addListener('click', function(e) {{
         if (!pickMode) return;
+        closeInfo();
         selectedLat = e.latLng.lat();
         selectedLng = e.latLng.lng();
         confirmed = false;
@@ -120,21 +135,41 @@ public partial class EventMapControl : ContentPage
       }});
     }}
 
-    function enablePickMode() {{
-      pickMode = true;
+    function addEventPinNow(lat, lng, label, address, img) {{
+      var m = new google.maps.Marker({{
+        position: {{ lat: lat, lng: lng }},
+        map: mapObj,
+        title: label,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+      }});
+      m.addListener('click', function() {{
+        document.getElementById('info-title').innerText = label;
+        document.getElementById('info-address').innerText = address || '';
+        var imgEl = document.getElementById('info-img');
+        if (img && img.length > 0) {{
+          imgEl.src = 'data:image/jpeg;base64,' + img;
+          imgEl.style.display = 'block';
+        }} else {{
+          imgEl.style.display = 'none';
+        }}
+        document.getElementById('info-box').style.display = 'block';
+      }});
     }}
 
-    function addEventPin(lat, lng, label) {{
+    function addEventPin(lat, lng, label, address, img) {{
       if (mapReady) {{
-        new google.maps.Marker({{
-          position: {{ lat: lat, lng: lng }},
-          map: mapObj,
-          title: label,
-          icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-        }});
+        addEventPinNow(lat, lng, label, address, img);
       }} else {{
-        pendingPins.push({{ lat: lat, lng: lng, label: label }});
+        pendingPins.push({{ lat: lat, lng: lng, label: label, address: address, img: img }});
       }}
+    }}
+
+    function closeInfo() {{
+      document.getElementById('info-box').style.display = 'none';
+    }}
+
+    function enablePickMode() {{
+      pickMode = true;
     }}
 
     function confirmLocation() {{
@@ -162,13 +197,15 @@ public partial class EventMapControl : ContentPage
 
         windowsWeb.Navigated += async (s, e) =>
         {
-            // Poll until Google Maps JS is actually ready
+            if (_pinsLoaded) return;
+
             for (int i = 0; i < 20; i++)
             {
                 await Task.Delay(500);
                 var ready = await windowsWeb.EvaluateJavaScriptAsync("typeof mapObj !== 'undefined' && mapObj !== null ? 'true' : 'false'");
                 if (ready == "true")
                 {
+                    _pinsLoaded = true;
                     StartPolling();
                     await LoadEventPinsWindows();
                     if (LocationSelected != null)
@@ -186,7 +223,7 @@ public partial class EventMapControl : ContentPage
     {
         base.OnAppearing();
 #if ANDROID
-        await Task.Delay(300); // wait for map to render
+        await Task.Delay(300);
         LoadEventPinsAndroid();
 #endif
     }
@@ -199,7 +236,7 @@ public partial class EventMapControl : ContentPage
         var store = new EventStore();
         var events = store.LoadAll();
 
-        map.Pins.Clear(); // clear first, then re-add all
+        map.Pins.Clear();
 
         foreach (var ev in events)
         {
@@ -208,11 +245,79 @@ public partial class EventMapControl : ContentPage
             map.Pins.Add(new Pin
             {
                 Label = string.IsNullOrEmpty(ev.LocationAddress) ? "Event" : ev.LocationAddress,
-                Address = ev.Details?.Split('\n').FirstOrDefault() ?? "",
+                Address = string.IsNullOrEmpty(ev.Details) ? "No description" : ev.Details.Split('\n').FirstOrDefault() ?? "",
                 Position = new Maui.GoogleMaps.Position(ev.Latitude, ev.Longitude),
                 Type = PinType.Place
             });
         }
+    }
+
+    private void ShowEventOverlay(Event ev)
+    {
+        // remove any existing overlay
+        var existing = MainLayout.Children.FirstOrDefault(v => v is Frame f && (string)f.AutomationId == "event-overlay");
+        if (existing != null) MainLayout.Children.Remove(existing);
+
+        var frame = new Frame
+        {
+            AutomationId = "event-overlay",
+            BackgroundColor = Color.FromArgb("#EE1e1e1e"),
+            CornerRadius = 12,
+            Padding = 10,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Start,
+            WidthRequest = 260,
+            Margin = new Thickness(0, 60, 0, 0)
+        };
+
+        var stack = new VerticalStackLayout { Spacing = 6 };
+
+        if (!string.IsNullOrEmpty(ev.ImageBase64))
+        {
+            try
+            {
+                var bytes = Convert.FromBase64String(ev.ImageBase64);
+                stack.Children.Add(new Image
+                {
+                    Source = ImageSource.FromStream(() => new MemoryStream(bytes)),
+                    HeightRequest = 120,
+                    Aspect = Aspect.AspectFill
+                });
+            }
+            catch { }
+        }
+
+        stack.Children.Add(new Label
+        {
+            Text = ev.LocationAddress ?? "Event",
+            TextColor = Colors.White,
+            FontAttributes = FontAttributes.Bold,
+            FontSize = 14
+        });
+
+        if (!string.IsNullOrEmpty(ev.Details))
+            stack.Children.Add(new Label
+            {
+                Text = ev.Details.Split('\n').FirstOrDefault(),
+                TextColor = Color.FromArgb("#CCCCCC"),
+                FontSize = 12
+            });
+
+        var closeBtn = new Button
+        {
+            Text = "✕",
+            BackgroundColor = Colors.Transparent,
+            TextColor = Colors.White,
+            HorizontalOptions = LayoutOptions.End,
+            HeightRequest = 30,
+            WidthRequest = 30,
+            Padding = 0
+        };
+        closeBtn.Clicked += (s, e) => MainLayout.Children.Remove(frame);
+        stack.Children.Add(closeBtn);
+
+        frame.Content = stack;
+        MainLayout.Children.Add(frame);
     }
 #endif
 
@@ -227,11 +332,16 @@ public partial class EventMapControl : ContentPage
         foreach (var ev in events)
         {
             if (ev.Latitude == 0 && ev.Longitude == 0) continue;
-            var label = (ev.LocationAddress ?? ev.Details?.Split('\n').FirstOrDefault() ?? "Event")
-                .Replace("'", "\\'");
+
+            var label = (ev.LocationAddress ?? "Event").Replace("'", "\\'");
+            var address = (ev.Details?.Split('\n').FirstOrDefault() ?? "No description").Replace("'", "\\'");
+            var imageData = string.IsNullOrEmpty(ev.ImageBase64) ? "" : ev.ImageBase64;
+
             await windowsWeb.EvaluateJavaScriptAsync(
-                $"addEventPin({ev.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, " +
-                $"{ev.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, '{label}')");
+                $"addEventPin(" +
+                $"{ev.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, " +
+                $"{ev.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, " +
+                $"'{label}', '{address}', '{imageData}')");
         }
     }
 
@@ -275,10 +385,13 @@ public partial class EventMapControl : ContentPage
         }, token);
     }
 
+
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _pollCts?.Cancel();
+        _pinsLoaded = false;
     }
 #endif
 
