@@ -30,6 +30,7 @@ public partial class AllEventsPage : ContentPage
         {
             Details = e.Details,
             CreatedAt = e.CreatedAt,
+            ScheduledAt = e.ScheduledAt,
             ImageSource = string.IsNullOrEmpty(e.ImageBase64)
                 ? ImageSource.FromFile("image-placeholder.png")
                 : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64)))
@@ -43,6 +44,7 @@ public partial class AllEventsPage : ContentPage
         {
             Details = e.Details,
             CreatedAt = e.CreatedAt,
+            ScheduledAt = e.ScheduledAt,
             ImageSource = string.IsNullOrEmpty(e.ImageBase64)
                 ? ImageSource.FromFile("image-placeholder.png")
                 : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64)))
@@ -60,6 +62,29 @@ public partial class AllEventsPage : ContentPage
             foreach (var it in list)
                 it.SelectionEnabled = false;
         }
+
+        // Wire up item tapped to open single preview
+        AllEventsCollectionView.SelectionMode = SelectionMode.Single;
+        AllEventsCollectionView.SelectionChanged -= OnSelectionChanged;
+        AllEventsCollectionView.SelectionChanged += (s, e) =>
+        {
+            // If we're in bulk-selection mode for 'not interested', don't open the preview on item tap
+            if (_selectionMode)
+            {
+                // clear any selection added by tapping
+                AllEventsCollectionView.SelectedItem = null;
+                return;
+            }
+
+            if (e.CurrentSelection != null && e.CurrentSelection.Count > 0 && e.CurrentSelection[0] is EventPreviewItem it)
+            {
+                // Open EventPreview page for this item without favorite/cycle controls
+                var page = new EventPreview(it, hideControls: true);
+                // Clear selection to avoid staying highlighted
+                AllEventsCollectionView.SelectedItem = null;
+                Navigation.PushAsync(page);
+            }
+        };
     }
 
     private void OnUninterestedClicked(object sender, EventArgs e)
@@ -124,14 +149,22 @@ public partial class AllEventsPage : ContentPage
 
     private void OnSelectAllClicked(object sender, EventArgs e)
     {
-        // Select or deselect all visible items
+        // Select or deselect all visible items and update checkboxes
         var cv = this.FindByName<CollectionView>("AllEventsCollectionView");
         if (cv != null && cv.ItemsSource is IEnumerable<EventPreviewItem> items)
         {
             var list = items.ToList();
+
+            // If every item is already selected, deselect all. Otherwise select all.
+            var allSelected = list.Count > 0 && list.All(i => i.IsSelected);
+
             _selected.Clear();
             foreach (var it in list)
-                _selected.Add(it);
+            {
+                it.IsSelected = !allSelected; // set true to select, false to deselect
+                if (it.IsSelected)
+                    _selected.Add(it);
+            }
         }
     }
 

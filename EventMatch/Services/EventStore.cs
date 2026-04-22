@@ -1,5 +1,6 @@
 using EventMatch.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Microsoft.Maui.Storage;
 
@@ -17,7 +18,19 @@ namespace EventMatch.Services
 
             try
             {
-                return JsonSerializer.Deserialize<List<Event>>(json) ?? new List<Event>();
+                var all = JsonSerializer.Deserialize<List<Event>>(json) ?? new List<Event>();
+
+                // Purge events whose scheduled date has already passed (compare by date only, local time)
+                var today = DateTime.Now.Date;
+                var valid = all.Where(e => e.ScheduledAt.Date >= today).ToList();
+
+                if (valid.Count != all.Count)
+                {
+                    // Save back the filtered list so expired events are removed from storage
+                    SaveAll(valid);
+                }
+
+                return valid;
             }
             catch
             {
