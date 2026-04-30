@@ -18,6 +18,35 @@ public partial class EventPreview : ContentPage
 
 	}
 
+	// When showing a single event (e.g. opened from My Events), we use this constructor
+	private bool _singleEventMode = false;
+
+	public EventPreview(EventPreviewItem item, bool hideControls = true)
+	{
+		InitializeComponent();
+
+		_singleEventMode = true;
+		_items = new List<EventPreviewItem> { item };
+		_currentIndex = 0;
+
+		if (hideControls)
+			HideCycleAndFavoriteControls();
+
+		UpdateDisplayedEvent();
+	}
+
+	private void HideCycleAndFavoriteControls()
+	{
+		var fav = this.FindByName<Button>("FavoriteButton");
+		if (fav != null) fav.IsVisible = false;
+
+		var cycle = this.FindByName<Button>("CycleEventButton");
+		if (cycle != null) cycle.IsVisible = false;
+
+		var refresh = this.FindByName<Button>("RefreshButton");
+		if (refresh != null) refresh.IsVisible = false;
+	}
+
 	private void OnRefreshClicked(object sender, EventArgs e)
 	{
 		// Reload events from the store and show a random un-favorited event (if any)
@@ -32,6 +61,7 @@ public partial class EventPreview : ContentPage
             {
                 Details = e.Details,
                 CreatedAt = e.CreatedAt,
+                ScheduledAt = e.ScheduledAt,
                 LocationAddress = e.LocationAddress,  // add this
                 ImageSource = string.IsNullOrEmpty(e.ImageBase64)
         ? ImageSource.FromFile("image-placeholder.png")
@@ -49,7 +79,15 @@ public partial class EventPreview : ContentPage
 
 	protected override void OnAppearing()
 	{
-		base.OnAppearing();
+     base.OnAppearing();
+
+		// If opened to display a single event, don't reload from store
+		if (_singleEventMode)
+		{
+			// ensure the displayed event is up-to-date
+			UpdateDisplayedEvent();
+			return;
+		}
 
 		var store = new EventStore();
 		var events = store.LoadAll();
@@ -59,19 +97,20 @@ public partial class EventPreview : ContentPage
 		// Exclude events already favorited by the current user
 		_items = events
 			.Where(e => e.FavoritedBy == null || !e.FavoritedBy.Contains(currentUser))
-            .Select(e => new EventPreviewItem
-            {
-                Details = e.Details,
-                CreatedAt = e.CreatedAt,
-                LocationAddress = e.LocationAddress,  // add this
-                ImageSource = string.IsNullOrEmpty(e.ImageBase64)
-        ? ImageSource.FromFile("image-placeholder.png")
-        : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
-                IsFavorite = e.FavoritedBy != null && e.FavoritedBy.Contains(currentUser)
-            }).ToList();
+			.Select(e => new EventPreviewItem
+			{
+				Details = e.Details,
+				CreatedAt = e.CreatedAt,
+				ScheduledAt = e.ScheduledAt,
+				LocationAddress = e.LocationAddress,  // add this
+				ImageSource = string.IsNullOrEmpty(e.ImageBase64)
+		? ImageSource.FromFile("image-placeholder.png")
+		: ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
+				IsFavorite = e.FavoritedBy != null && e.FavoritedBy.Contains(currentUser)
+			}).ToList();
 
 		_currentIndex = 0;
-     UpdateDisplayedEvent();
+		UpdateDisplayedEvent();
 
 		// Ensure refresh button visibility matches whether there are events
 		var refreshBtn = this.FindByName<Button>("RefreshButton");
@@ -144,6 +183,21 @@ public partial class EventPreview : ContentPage
 		{
 			fav.BackgroundColor = Microsoft.Maui.Graphics.Color.FromArgb(item.IsFavorite ? "#FF1493" : "#AA00AA00");
 		}
+
+		// ScheduledAt label
+		var scheduledLabel = this.FindByName<Label>("ScheduledAtLabel");
+		if (scheduledLabel != null)
+		{
+			if (item.ScheduledAt != default)
+			{
+				scheduledLabel.Text = $"When: {item.ScheduledAt:g}";
+				scheduledLabel.IsVisible = true;
+			}
+			else
+			{
+				scheduledLabel.IsVisible = false;
+			}
+		}
 	}
 
 	private void OnCycleEventClicked(object sender, EventArgs e)
@@ -205,6 +259,7 @@ public class EventPreviewItem : INotifyPropertyChanged
 	public ImageSource ImageSource { get; set; }
 	public bool IsFavorite { get; set; }
     public string LocationAddress { get; set; } = string.Empty;
+    public DateTime ScheduledAt { get; set; }
 
     private bool _isSelected;
 	public bool IsSelected

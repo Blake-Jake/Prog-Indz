@@ -8,6 +8,8 @@ namespace EventMatch.Models
         public string Details { get; set; } = string.Empty;
         public string ImageBase64 { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        // Date/time for when the event is scheduled to occur
+        public DateTime ScheduledAt { get; set; } = DateTime.UtcNow;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string LocationAddress { get; set; } = string.Empty;

@@ -21,7 +21,7 @@
                 <Button x:Name="UninterestedButton" Text="I'm not interested anymore" Clicked="OnUninterestedClicked" BackgroundColor="#9932CC" TextColor="White" CornerRadius="8" WidthRequest="220" HorizontalOptions="End" />
             </HorizontalStackLayout>
 
-            <CollectionView x:Name="AllEventsCollectionView" ItemsLayout="VerticalList" SelectionMode="None">
+            <CollectionView x:Name="AllEventsCollectionView" ItemsLayout="VerticalList" SelectionMode="None" SelectionChanged="OnSelectionChanged">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame HasShadow="False" CornerRadius="8" BackgroundColor="#434253" Padding="12" Margin="0,8">
@@ -39,7 +39,7 @@
                                 <VerticalStackLayout Grid.Column="1">
                                     <Image Source="{Binding ImageSource}" Aspect="AspectFill" HeightRequest="160" />
                                     <Label Text="{Binding Details}" FontSize="14" TextColor="White" Margin="0,8,0,0" />
-                                    <Label Text="{Binding CreatedAt}" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="Start" />
+                                    <Label Text="{Binding ScheduledAt, StringFormat='When: {0:g}'}" FontSize="10" TextColor="#D8BFD8" HorizontalOptions="Start" />
                                 </VerticalStackLayout>
 
                                 <!-- No per-item remove button; use bulk "I'm not interested anymore" flow -->

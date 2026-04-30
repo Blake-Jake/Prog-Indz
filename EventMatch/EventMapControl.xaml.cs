@@ -1,8 +1,9 @@
+using EventMatch.Models;
 using EventMatch.Services;
 using Maui.GoogleMaps;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using EventMatch.Models;
+using System.Timers;
 
 namespace EventMatch;
 
@@ -245,7 +246,8 @@ public partial class EventMapControl : ContentPage
             map.Pins.Add(new Pin
             {
                 Label = string.IsNullOrEmpty(ev.LocationAddress) ? "Event" : ev.LocationAddress,
-                Address = string.IsNullOrEmpty(ev.Details) ? "No description" : ev.Details.Split('\n').FirstOrDefault() ?? "",
+                Address = (string.IsNullOrEmpty(ev.Details) ? "No description" : ev.Details.Split('\n').FirstOrDefault() ?? "")
+                + (ev.ScheduledAt != default ? $"\n🕐 {ev.ScheduledAt:g}" : ""),
                 Position = new Maui.GoogleMaps.Position(ev.Latitude, ev.Longitude),
                 Type = PinType.Place
             });
@@ -295,6 +297,14 @@ public partial class EventMapControl : ContentPage
             FontSize = 14
         });
 
+        if (ev.ScheduledAt != default)
+            stack.Children.Add(new Label
+            {
+                Text = $"🕐 {ev.ScheduledAt:g}",
+                TextColor = Color.FromArgb("#90EE90"),
+                FontSize = 12
+            });
+
         if (!string.IsNullOrEmpty(ev.Details))
             stack.Children.Add(new Label
             {
@@ -334,7 +344,10 @@ public partial class EventMapControl : ContentPage
             if (ev.Latitude == 0 && ev.Longitude == 0) continue;
 
             var label = (ev.LocationAddress ?? "Event").Replace("'", "\\'");
-            var address = (ev.Details?.Split('\n').FirstOrDefault() ?? "No description").Replace("'", "\\'");
+            var timeStr = ev.ScheduledAt != default
+            ? $" | 🕐 {ev.ScheduledAt.ToString("g", System.Globalization.CultureInfo.CurrentCulture)}"
+            : "";
+            var address = ((ev.Details?.Split('\n').FirstOrDefault() ?? "No description") + timeStr).Replace("'", "\\'");
             var imageData = string.IsNullOrEmpty(ev.ImageBase64) ? "" : ev.ImageBase64;
 
             await windowsWeb.EvaluateJavaScriptAsync(

@@ -46,6 +46,11 @@
                            FontSize="13"
                            IsVisible="False"/>
 
+                    <Label x:Name="ScheduledAtLabel"
+                           TextColor="#D8BFD8"
+                           FontSize="12"
+                           IsVisible="False"/>
+
                     <Label x:Name="CreatedAtLabel"
                            FontSize="12"
                            TextColor="#D8BFD8"

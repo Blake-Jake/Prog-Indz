@@ -34,11 +34,21 @@ public partial class EventCreator : ContentPage
     {
         // Create new event and add to store
         var details = EventDetailsEditor?.Text ?? string.Empty;
+
+        // Find pickers by name (avoids depending on generated fields)
+        var datePicker = this.FindByName<DatePicker>("EventDatePicker");
+        var timePicker = this.FindByName<TimePicker>("EventTimePicker");
+
+        var date = datePicker?.Date ?? DateTime.Now.Date;
+        var time = timePicker?.Time ?? DateTime.Now.TimeOfDay;
+        var scheduled = date.Date + time;
+
         var newEvent = new Event
         {
             Details = details,
             ImageBase64 = _pickedImageBase64 ?? string.Empty,
             CreatedAt = DateTime.UtcNow,
+            ScheduledAt = scheduled,
             Latitude = selectedLat,
             Longitude = selectedLng,
             LocationAddress = _selectedAddress ?? string.Empty
