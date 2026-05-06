@@ -77,7 +77,8 @@
     <ShellContent
         Title="Sign Up"
         ContentTemplate="{DataTemplate local:SignUpPage}"
-        Route="SignUpPage" />
+        Route="SignUpPage" x:Name="MySignUpPage"
+        FlyoutItemIsVisible="False"/>
 
     <MenuItem 
         Text="Logout" 
