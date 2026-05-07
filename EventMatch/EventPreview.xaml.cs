@@ -62,7 +62,8 @@ public partial class EventPreview : ContentPage
                 Details = e.Details,
                 CreatedAt = e.CreatedAt,
                 ScheduledAt = e.ScheduledAt,
-                LocationAddress = e.LocationAddress,  // add this
+                LocationAddress = e.LocationAddress,
+                Tags = e.Tags ?? new List<Tag>(),
                 ImageSource = string.IsNullOrEmpty(e.ImageBase64)
         ? ImageSource.FromFile("image-placeholder.png")
         : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
@@ -102,7 +103,8 @@ public partial class EventPreview : ContentPage
 				Details = e.Details,
 				CreatedAt = e.CreatedAt,
 				ScheduledAt = e.ScheduledAt,
-				LocationAddress = e.LocationAddress,  // add this
+				LocationAddress = e.LocationAddress,
+				Tags = e.Tags ?? new List<Tag>(),
 				ImageSource = string.IsNullOrEmpty(e.ImageBase64)
 		? ImageSource.FromFile("image-placeholder.png")
 		: ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(e.ImageBase64))),
@@ -198,6 +200,22 @@ public partial class EventPreview : ContentPage
 				scheduledLabel.IsVisible = false;
 			}
 		}
+
+		// Tags label
+		var tagsLabel = this.FindByName<Label>("TagsLabel");
+		if (tagsLabel != null)
+		{
+			if (item.Tags != null && item.Tags.Count > 0)
+			{
+				var tagNames = string.Join(", ", item.Tags.Select(t => t.Name));
+				tagsLabel.Text = tagNames;
+				tagsLabel.IsVisible = true;
+			}
+			else
+			{
+				tagsLabel.IsVisible = false;
+			}
+		}
 	}
 
 	private void OnCycleEventClicked(object sender, EventArgs e)
@@ -260,6 +278,7 @@ public class EventPreviewItem : INotifyPropertyChanged
 	public bool IsFavorite { get; set; }
     public string LocationAddress { get; set; } = string.Empty;
     public DateTime ScheduledAt { get; set; }
+    public List<Tag> Tags { get; set; } = new List<Tag>();
 
     private bool _isSelected;
 	public bool IsSelected

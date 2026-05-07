@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace EventMatch
 {
@@ -6,12 +7,28 @@ namespace EventMatch
     {
         public App()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"CRITICAL ERROR in App.ctor: {ex}");
+                throw;
+            }
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            try
+            {
+                return new Window(new AppShell());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"CRITICAL ERROR in CreateWindow: {ex}");
+                throw;
+            }
         }
     }
 }

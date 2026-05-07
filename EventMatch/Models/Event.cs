@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace EventMatch.Models
 {
@@ -14,6 +15,8 @@ namespace EventMatch.Models
         public double Longitude { get; set; }
         public string LocationAddress { get; set; } = string.Empty;
         // List of user emails who favorited this event
-        public System.Collections.Generic.List<string> FavoritedBy { get; set; } = new System.Collections.Generic.List<string>();
+        public List<string> FavoritedBy { get; set; } = new List<string>();
+        // Tag support
+        public List<Tag> Tags { get; set; } = new List<Tag>();
     }
 }

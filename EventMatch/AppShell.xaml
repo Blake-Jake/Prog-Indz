@@ -65,6 +65,12 @@
         <ShellContent ContentTemplate="{DataTemplate local:EventCreator}" Route="EventCreator"/>
     </FlyoutItem>
 
+    <!-- Laikinai iškomentuota (debugging)
+    <FlyoutItem Title="Data Scraper" Icon="info.png">
+        <ShellContent ContentTemplate="{DataTemplate local:DataScraperPage}" Route="DataScraper"/>
+    </FlyoutItem>
+    -->
+
     <FlyoutItem Title="Debug" Icon="info.png">
         <ShellContent ContentTemplate="{DataTemplate local:DebugPage}" Route="DebugPage"/>
     </FlyoutItem>

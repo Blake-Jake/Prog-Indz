@@ -1,0 +1,66 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EventMatch.DataScraperPage"
+             Title="Data Scraper"
+             BackgroundImageSource="download_p.jpg">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Label Text="Facebook Events Scraper" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="White"/>
+            
+            <!-- Facebook Page ID Input -->
+            <Label Text="Facebook Page ID:" FontSize="14" TextColor="#D8BFD8"/>
+            <Entry x:Name="PageIdEntry" 
+                   Placeholder="Įveskite Facebook puslapio ID" 
+                   BackgroundColor="#80232323" 
+                   TextColor="White"
+                   PlaceholderColor="#AAAAAA"/>
+            
+            <!-- Access Token Input -->
+            <Label Text="Facebook Access Token:" FontSize="14" TextColor="#D8BFD8"/>
+            <Entry x:Name="AccessTokenEntry" 
+                   Placeholder="Įveskite Access Token" 
+                   BackgroundColor="#80232323" 
+                   TextColor="White"
+                   PlaceholderColor="#AAAAAA"
+                   IsPassword="True"/>
+            
+            <!-- Info Label -->
+            <Label Text="📝 Pastaba: Aplankyme Settings → Developers.facebook.com ir sukurkite App, kad gautumėte Access Token ir Page ID" 
+                   FontSize="12" 
+                   TextColor="#CCCCCC"
+                   LineBreakMode="WordWrap"/>
+            
+            <!-- Scrape Button -->
+            <Button Text="Scrape Facebook Events" 
+                    Clicked="OnScrapeDataClicked"
+                    BackgroundColor="#2E8B57"
+                    TextColor="White"
+                    CornerRadius="8"
+                    Padding="16,12"/>
+            
+            <!-- Demo Button -->
+            <Button Text="📝 Load Demo Events (Testas)" 
+                    Clicked="OnLoadDemoClicked"
+                    BackgroundColor="#4169E1"
+                    TextColor="White"
+                    CornerRadius="8"
+                    Padding="16,12"/>
+            
+            <!-- Results -->
+            <Label Text="Rezultatai:" FontSize="14" TextColor="#D8BFD8"/>
+            <Editor x:Name="ResultEditor" 
+                    HeightRequest="250" 
+                    IsReadOnly="True"
+                    BackgroundColor="#80232323"
+                    TextColor="White"/>
+            
+            <!-- Status Label -->
+            <Label x:Name="StatusLabel" 
+                   Text="" 
+                   FontSize="12" 
+                   TextColor="#FFD700"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

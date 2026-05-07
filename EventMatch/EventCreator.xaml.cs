@@ -43,6 +43,12 @@ public partial class EventCreator : ContentPage
         var time = timePicker?.Time ?? DateTime.Now.TimeOfDay;
         var scheduled = date.Date + time;
 
+        // Parse tags from entry
+        var tagsRaw = this.FindByName<Entry>("TagsEntry")?.Text ?? string.Empty;
+        var tags = tagsRaw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                          .Select(t => new Tag { Name = t })
+                          .ToList();
+
         var newEvent = new Event
         {
             Details = details,
@@ -51,7 +57,8 @@ public partial class EventCreator : ContentPage
             ScheduledAt = scheduled,
             Latitude = selectedLat,
             Longitude = selectedLng,
-            LocationAddress = _selectedAddress ?? string.Empty
+            LocationAddress = _selectedAddress ?? string.Empty,
+            Tags = tags
         };
 
         _store.Add(newEvent);
