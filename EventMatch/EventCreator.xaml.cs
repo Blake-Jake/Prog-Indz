@@ -99,12 +99,11 @@ public partial class EventCreator : ContentPage
             selectedLng = lng;
 
 #if WINDOWS
-
-            var address = $"{lat:F4}, {lng:F4}";
+            var address = await ReverseGeocodeAsync(lat, lng);
 #else
-    var geocoder = new Geocoder();
-    var positions = await geocoder.GetAddressesForPositionAsync(new Position(lat, lng));
-    var address = positions.FirstOrDefault() ?? $"{lat:F4}, {lng:F4}";
+        var geocoder = new Geocoder();
+        var positions = await geocoder.GetAddressesForPositionAsync(new Position(lat, lng));
+        var address = positions.FirstOrDefault() ?? $"{lat:F4}, {lng:F4}";
 #endif
 
             _selectedAddress = address;
@@ -113,4 +112,31 @@ public partial class EventCreator : ContentPage
 
         await Navigation.PushAsync(mapPage);
     }
+
+#if WINDOWS
+    private async Task<string> ReverseGeocodeAsync(double lat, double lng)
+    {
+        try
+        {
+            var apiKey = "AIzaSyA2lGsQdCDdzQlfhZWYYPVEPye9ixinTvM";
+            var url = $"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{lng.ToString(System.Globalization.CultureInfo.InvariantCulture)}&key={apiKey}";
+
+            using var client = new System.Net.Http.HttpClient();
+            var json = await client.GetStringAsync(url);
+
+            // Parse the first result's formatted_address
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var results = doc.RootElement.GetProperty("results");
+
+            if (results.GetArrayLength() > 0)
+            {
+                return results[0].GetProperty("formatted_address").GetString()
+                       ?? $"{lat:F4}, {lng:F4}";
+            }
+        }
+        catch { }
+
+        return $"{lat:F4}, {lng:F4}";
+    }
+#endif
 }
